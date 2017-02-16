@@ -1,5 +1,7 @@
 package com.teamgamma.scavenger;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
@@ -12,7 +14,9 @@ import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.view.View;
 import android.view.*;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -46,7 +50,7 @@ import android.location.Geocoder;
 import java.io.IOException;
 import java.util.List;
 
-
+import static java.security.AccessController.getContext;
 
 
 public class PlantMapActivity extends FragmentActivity implements OnMapReadyCallback,
@@ -91,13 +95,28 @@ public class PlantMapActivity extends FragmentActivity implements OnMapReadyCall
         geo_autocomplete = (DelayAutoCompleteTextView) findViewById(R.id.geo_autocomplete);
         geo_autocomplete.setThreshold(THRESHOLD);
         geo_autocomplete.setAdapter(new GeoAutoCompleteAdapter(this)); // 'this' is Activity instance
+        geo_autocomplete.setOnItemSelectedListener(new OnItemSelectedListener(){
 
+            @Override
+              public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+                GeoSearchResult result = (GeoSearchResult) adapterView.getItemAtPosition(position);
+
+              }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+             }
+        );
         geo_autocomplete.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 GeoSearchResult result = (GeoSearchResult) adapterView.getItemAtPosition(position);
                 geo_autocomplete.setText(result.getAddress());
+                InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                in.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
                 String location = result.getAddress().toString();
                 List<Address> addressList = null;
 
@@ -114,6 +133,7 @@ public class PlantMapActivity extends FragmentActivity implements OnMapReadyCall
                     mMap.addMarker(new MarkerOptions().position(latLng).title("Marker"));
                     mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
                 }
+
 
             }
         });
@@ -154,6 +174,7 @@ public class PlantMapActivity extends FragmentActivity implements OnMapReadyCall
             }
         });
     }
+
 
 
     public void onMapSearch(View view) {
