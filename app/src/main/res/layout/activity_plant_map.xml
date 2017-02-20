@@ -78,7 +78,10 @@
 
 -->
 
-
+    <com.google.android.gms.maps.MapView
+        android:id="@+id/mapView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 
 <fragment xmlns:android="http://schemas.android.com/apk/res/android"
@@ -89,5 +92,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.teamgamma.scavenger.PlantMapActivity"
-    tools:layout="@layout/activity_plant_map" />
+    tools:layout="@layout/activity_plant_map"
+    />
 </LinearLayout>

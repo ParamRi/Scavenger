@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -28,6 +29,8 @@ import android.text.TextWatcher;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -53,48 +56,56 @@ import java.util.List;
 import static java.security.AccessController.getContext;
 
 
-public class PlantMapActivity extends FragmentActivity implements OnMapReadyCallback,
+public class PlantMapActivity extends Fragment implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         OnConnectionFailedListener,
         LocationListener
         {
-    private Integer THRESHOLD = 2;
-    private DelayAutoCompleteTextView geo_autocomplete;
-    private ImageView geo_autocomplete_clear;
-    private GoogleMap mMap;
-    private GoogleApiClient mGoogleApiClient;
-    private Location mLastLocation;
-    private LocationRequest mLocationRequest;
-    private Marker mCurrLocationMarker;
-
-
-
+        private Integer THRESHOLD = 2;
+        private DelayAutoCompleteTextView geo_autocomplete;
+        private ImageView geo_autocomplete_clear;
+        private GoogleMap mMap;
+        private GoogleApiClient mGoogleApiClient;
+        private Location mLastLocation;
+        private LocationRequest mLocationRequest;
+        private Marker mCurrLocationMarker;
+        private MapView mMapView;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        final Geocoder geocoder = new Geocoder(this);
-        setContentView(R.layout.activity_plant_map);
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.activity_plant_map, container, false);
+        super.onCreate(savedInstanceState);
+        mMapView = (MapView) view.findViewById(R.id.mapView);
+        mMapView.onCreate(savedInstanceState);
+
+        mMapView.onResume();
+        final Geocoder geocoder = new Geocoder(getContext());
         // Create a GoogleApiClient instance
         if (mGoogleApiClient == null) {
             // ATTENTION: This "addApi(AppIndex.API)"was auto-generated to implement the App Indexing API.
             // See https://g.co/AppIndexing/AndroidStudio for more information.
-            mGoogleApiClient = new GoogleApiClient.Builder(this)
+            mGoogleApiClient = new GoogleApiClient.Builder(getContext())
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
                     .addApi(LocationServices.API)
                     .addApi(AppIndex.API).build();
         }
 
-        geo_autocomplete_clear = (android.widget.ImageView) findViewById(R.id.geo_autocomplete_clear);
+        geo_autocomplete_clear = (android.widget.ImageView) view.findViewById(R.id.geo_autocomplete_clear);
 
-        geo_autocomplete = (DelayAutoCompleteTextView) findViewById(R.id.geo_autocomplete);
+        geo_autocomplete = (DelayAutoCompleteTextView) view.findViewById(R.id.geo_autocomplete);
         geo_autocomplete.setThreshold(THRESHOLD);
-        geo_autocomplete.setAdapter(new GeoAutoCompleteAdapter(this)); // 'this' is Activity instance
+        geo_autocomplete.setAdapter(new GeoAutoCompleteAdapter(getContext())); // 'this' is Activity instance
         geo_autocomplete.setOnItemSelectedListener(new OnItemSelectedListener(){
 
             @Override
@@ -115,7 +126,7 @@ public class PlantMapActivity extends FragmentActivity implements OnMapReadyCall
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 GeoSearchResult result = (GeoSearchResult) adapterView.getItemAtPosition(position);
                 geo_autocomplete.setText(result.getAddress());
-                InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                InputMethodManager in = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                 in.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
                 String location = result.getAddress().toString();
                 List<Address> addressList = null;
@@ -173,17 +184,40 @@ public class PlantMapActivity extends FragmentActivity implements OnMapReadyCall
                 geo_autocomplete.setText("");
             }
         });
+        return view;
     }
 
+            @Override
+            public void onResume() {
+                super.onResume();
+                mMapView.onResume();
+            }
 
+            @Override
+            public void onPause() {
+                super.onPause();
+                mMapView.onPause();
+            }
+
+            @Override
+            public void onDestroy() {
+                super.onDestroy();
+                mMapView.onDestroy();
+            }
+
+            @Override
+            public void onLowMemory() {
+                super.onLowMemory();
+                mMapView.onLowMemory();
+            }
 
     public void onMapSearch(View view) {
-        EditText locationSearch = (EditText) findViewById(R.id.geo_autocomplete);
+        EditText locationSearch = (EditText) getView().findViewById(R.id.geo_autocomplete);
         String location = locationSearch.getText().toString();
         List<Address> addressList = null;
 
         if (location != null || !location.equals("")) {
-            Geocoder geocoder = new Geocoder(this);
+            Geocoder geocoder = new Geocoder(getContext());
             try {
                 addressList = geocoder.getFromLocationName(location, 1);
 
@@ -215,7 +249,7 @@ public class PlantMapActivity extends FragmentActivity implements OnMapReadyCall
 
         //Initialize Google Play Services
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this,
+            if (ContextCompat.checkSelfPermission(getContext(),
                     Manifest.permission.ACCESS_FINE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED) {
                 buildGoogleApiClient();
@@ -239,7 +273,7 @@ public class PlantMapActivity extends FragmentActivity implements OnMapReadyCall
 
     protected synchronized void buildGoogleApiClient(){
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
+        mGoogleApiClient = new GoogleApiClient.Builder(getContext())
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
@@ -261,7 +295,7 @@ public class PlantMapActivity extends FragmentActivity implements OnMapReadyCall
         mLocationRequest.setInterval(1000);
         mLocationRequest.setFastestInterval(1000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-        if (ContextCompat.checkSelfPermission(this,
+        if (ContextCompat.checkSelfPermission(getContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
@@ -304,12 +338,12 @@ public class PlantMapActivity extends FragmentActivity implements OnMapReadyCall
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     public boolean checkLocationPermission(){
-        if (ContextCompat.checkSelfPermission(this,
+        if (ContextCompat.checkSelfPermission(getContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
 
             // Asking user if explanation is needed
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
 
                 // Show an explanation to the user *asynchronously* -- don't block
@@ -317,14 +351,14 @@ public class PlantMapActivity extends FragmentActivity implements OnMapReadyCall
                 // sees the explanation, try again to request the permission.
 
                 //Prompt the user once explanation has been shown
-                ActivityCompat.requestPermissions(this,
+                ActivityCompat.requestPermissions(getActivity(),
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         MY_PERMISSIONS_REQUEST_LOCATION);
 
 
             } else {
                 // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(this,
+                ActivityCompat.requestPermissions(getActivity(),
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         MY_PERMISSIONS_REQUEST_LOCATION);
             }
@@ -345,7 +379,7 @@ public class PlantMapActivity extends FragmentActivity implements OnMapReadyCall
 
                     // permission was granted. Do the
                     // contacts-related task you need to do.
-                    if (ContextCompat.checkSelfPermission(this,
+                    if (ContextCompat.checkSelfPermission(getActivity().getApplicationContext(),
                             Manifest.permission.ACCESS_FINE_LOCATION)
                             == PackageManager.PERMISSION_GRANTED) {
 
@@ -358,7 +392,7 @@ public class PlantMapActivity extends FragmentActivity implements OnMapReadyCall
                 } else {
 
                     // Permission denied, Disable the functionality that depends on this permission.
-                    Toast.makeText(this, "permission denied", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "permission denied", Toast.LENGTH_LONG).show();
                 }
 
             }
