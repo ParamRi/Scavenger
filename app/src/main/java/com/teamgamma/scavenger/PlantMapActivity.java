@@ -14,11 +14,13 @@ import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.view.View;
 import android.view.*;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.Manifest;
 
@@ -116,7 +118,9 @@ public class PlantMapActivity extends FragmentActivity implements OnMapReadyCall
                 GeoSearchResult result = (GeoSearchResult) adapterView.getItemAtPosition(position);
                 geo_autocomplete.setText(result.getAddress());
                 InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                in.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
+                if(in != null) {
+                    in.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
+                }
                 String location = result.getAddress().toString();
                 List<Address> addressList = null;
 
@@ -132,12 +136,44 @@ public class PlantMapActivity extends FragmentActivity implements OnMapReadyCall
                     LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
                     mMap.addMarker(new MarkerOptions().position(latLng).title("Marker"));
                     mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+                    //mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
                 }
 
 
             }
         });
 
+        geo_autocomplete.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    if(in != null) {
+                        in.hideSoftInputFromWindow(v.getApplicationWindowToken(), 0);
+                    }geo_autocomplete.dismissDropDown();
+                    String location = v.getText().toString();
+                    List<Address> addressList = null;
+
+                    if (location != null || !location.equals("")) {
+
+                        try {
+                            addressList = geocoder.getFromLocationName(location, 1);
+
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        if (addressList.size() > 0) {
+                            Address address = addressList.get(0);
+                            LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+                            mMap.addMarker(new MarkerOptions().position(latLng).title("Marker"));
+                            mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+                        }
+                    }
+                    return true;
+                }
+                return false;
+
+        }});
 
         geo_autocomplete.addTextChangedListener(new TextWatcher() {
 
@@ -171,12 +207,13 @@ public class PlantMapActivity extends FragmentActivity implements OnMapReadyCall
             public void onClick(View v) {
                 // TODO Auto-generated method stub
                 geo_autocomplete.setText("");
+                
             }
         });
     }
 
 
-
+    /*
     public void onMapSearch(View view) {
         EditText locationSearch = (EditText) findViewById(R.id.geo_autocomplete);
         String location = locationSearch.getText().toString();
@@ -196,7 +233,7 @@ public class PlantMapActivity extends FragmentActivity implements OnMapReadyCall
             mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
         }
     }
-
+*/
 
     /**
      * Manipulates the map once available.
