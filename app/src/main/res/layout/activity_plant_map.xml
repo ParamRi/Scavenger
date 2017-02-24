@@ -1,93 +1,71 @@
-<?xml version="1.0" encoding="utf-8"?>
-
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/white"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <LinearLayout
+    <!-- The first child in the layout is for the main Activity UI-->
+
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:orientation="horizontal">
-
-    <com.teamgamma.scavenger.DelayAutoCompleteTextView
-        android:id="@+id/geo_autocomplete"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="4"
-        android:imeOptions="flagNoExtractUi|actionSearch"
-        android:inputType="textCapSentences"
-        android:textColor="@color/header_text_color"
-        android:background="@color/white"
-        android:hint="@string/map_geo_search_input_hint"
-        android:layout_gravity="center_vertical"
-        android:layout_marginEnd="35dp"
-        android:layout_marginRight="35dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="4dp"
-        android:padding="10dp"
-        android:dropDownWidth="fill_parent"
-        />
-
-    <ImageView
-        android:id="@+id/geo_autocomplete_clear"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.5"
-        android:src="@drawable/ic_close_light"
-        android:contentDescription="@string/map_list_header_txt"
-        android:layout_gravity="center_vertical|end"
-        android:visibility="gone"
-        android:layout_marginEnd="12dp"
-        android:layout_marginRight="12dp"
-        />
-        </LinearLayout>
+        android:layout_height="match_parent"
+        tools:context=".PlantMapActivity"
+        android:background="#ffffffff">
 
 
 
+        <com.teamgamma.scavenger.DelayAutoCompleteTextView
+            android:id="@+id/geo_autocomplete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:imeOptions="flagNoExtractUi|actionSearch"
+            android:inputType="textCapSentences"
+            android:textColor="@color/header_text_color"
+            android:background="@color/white"
+            android:hint="@string/map_geo_search_input_hint"
+            android:layout_gravity="center_vertical"
+            android:dropDownWidth="fill_parent"
+            android:layout_alignParentLeft="true"
 
-<!--
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+            />
 
-        <LinearLayout
+        <ImageView
+            android:id="@+id/geo_autocomplete_clear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_close_light"
+            android:contentDescription="@string/map_list_header_txt"
+            android:layout_gravity="center_vertical|end"
+            android:visibility="gone"
+            android:layout_toRightOf="@id/geo_autocomplete"
+            android:layout_alignParentRight="true"
+
+            />
+
+
+        <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:orientation="horizontal">
+            android:layout_alignParentBottom="true"
+            android:layout_below="@id/geo_autocomplete"
+            tools:context="com.teamgamma.scavenger.PlantMapActivity"
+            tools:layout="@layout/activity_plant_map" />
 
-            <EditText
-                android:id="@+id/editText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="4"
-                android:hint="Search Location" />
-
-        <Button
-        android:id="@+id/search_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.5"
-        android:onClick="onMapSearch"
-        android:text="Search" />
-
--->
+    </RelativeLayout>
 
 
+    <!-- Side navigation drawer UI -->
+    <ListView
+        android:id="@+id/navList"
+        android:layout_width="200dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="left|start"
+        android:background="#ffeeeeee"/>
 
+</android.support.v4.widget.DrawerLayout>
 
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:map="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/map"
-    android:name="com.google.android.gms.maps.SupportMapFragment"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.teamgamma.scavenger.PlantMapActivity"
-    tools:layout="@layout/activity_plant_map" />
-</LinearLayout>

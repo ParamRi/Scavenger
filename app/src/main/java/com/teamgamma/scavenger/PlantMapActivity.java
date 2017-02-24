@@ -1,8 +1,10 @@
 package com.teamgamma.scavenger;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
@@ -11,15 +13,24 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.*;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.Manifest;
@@ -44,6 +55,11 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 
 import android.location.Address;
@@ -52,13 +68,17 @@ import android.location.Geocoder;
 import java.io.IOException;
 import java.util.List;
 
-import static java.security.AccessController.getContext;
+
+import android.view.Menu;
+import android.view.MenuItem;
 
 
-public class PlantMapActivity extends FragmentActivity implements OnMapReadyCallback,
+
+public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         OnConnectionFailedListener,
-        LocationListener
+        LocationListener,
+        View.OnClickListener
         {
     private Integer THRESHOLD = 2;
     private DelayAutoCompleteTextView geo_autocomplete;
@@ -68,15 +88,53 @@ public class PlantMapActivity extends FragmentActivity implements OnMapReadyCall
     private Location mLastLocation;
     private LocationRequest mLocationRequest;
     private Marker mCurrLocationMarker;
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+    private static final String TAG = "EmailPassword";
+    private TextView mStatusTextView;
+    private TextView mDetailTextView;
+    private EditText mEmailField;
+    private EditText mPasswordField;
+    public ProgressDialog mProgressDialog;
 
+    private ListView mDrawerList;
+    private DrawerLayout mDrawerLayout;
+    private ArrayAdapter<String> mAdapter;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private String mActivityTitle;
 
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mAuth = FirebaseAuth.getInstance();
+
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    // User is signed in
+                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                } else {
+                    // User is signed out
+                    Log.d(TAG, "onAuthStateChanged:signed_out");
+                }
+                // ...
+            }
+        };
         final Geocoder geocoder = new Geocoder(this);
         setContentView(R.layout.activity_plant_map);
+
+        mDrawerList = (ListView)findViewById(R.id.navList);mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
+        mActivityTitle = getTitle().toString();
+
+        addDrawerItems();
+        setupDrawer();
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -97,6 +155,7 @@ public class PlantMapActivity extends FragmentActivity implements OnMapReadyCall
         geo_autocomplete = (DelayAutoCompleteTextView) findViewById(R.id.geo_autocomplete);
         geo_autocomplete.setThreshold(THRESHOLD);
         geo_autocomplete.setAdapter(new GeoAutoCompleteAdapter(this)); // 'this' is Activity instance
+        /*
         geo_autocomplete.setOnItemSelectedListener(new OnItemSelectedListener(){
 
             @Override
@@ -111,6 +170,7 @@ public class PlantMapActivity extends FragmentActivity implements OnMapReadyCall
             }
              }
         );
+        */
         geo_autocomplete.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
@@ -207,10 +267,206 @@ public class PlantMapActivity extends FragmentActivity implements OnMapReadyCall
             public void onClick(View v) {
                 // TODO Auto-generated method stub
                 geo_autocomplete.setText("");
-                
+
             }
         });
+
+
     }
+            public void showProgressDialog() {
+                if (mProgressDialog == null) {
+                    mProgressDialog = new ProgressDialog(this);
+                    mProgressDialog.setMessage(getString(R.string.loading));
+                    mProgressDialog.setIndeterminate(true);
+                }
+
+                mProgressDialog.show();
+            }
+
+            public void hideProgressDialog() {
+                if (mProgressDialog != null && mProgressDialog.isShowing()) {
+                    mProgressDialog.dismiss();
+                }
+            }
+
+            // [START on_start_add_listener]
+            @Override
+            public void onStart() {
+                super.onStart();
+                mAuth.addAuthStateListener(mAuthListener);
+            }
+            // [END on_start_add_listener]
+
+            // [START on_stop_remove_listener]
+            @Override
+            public void onStop() {
+                super.onStop();
+                if (mAuthListener != null) {
+                    mAuth.removeAuthStateListener(mAuthListener);
+                }
+            }
+            // [END on_stop_remove_listener]
+
+            private void createAccount(String email, String password) {
+                Log.d(TAG, "createAccount:" + email);
+                if (!validateForm()) {
+                    return;
+                }
+
+                showProgressDialog();
+
+                // [START create_user_with_email]
+                mAuth.createUserWithEmailAndPassword(email, password)
+
+                        .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                Log.d(TAG, "createUserWithEmail:onComplete:" + task.isSuccessful());
+
+                                // If sign in fails, display a message to the user. If sign in succeeds
+                                // the auth state listener will be notified and logic to handle the
+                                // signed in user can be handled in the listener.
+                                if (!task.isSuccessful()) {
+                                    Toast.makeText(PlantMapActivity.this, R.string.auth_failed,
+                                            Toast.LENGTH_SHORT).show();
+                                }
+
+                                // [START_EXCLUDE]
+                                hideProgressDialog();
+                                // [END_EXCLUDE]
+                            }
+                        });
+                // [END create_user_with_email]
+            }
+
+            private void signIn(String email, String password) {
+                Log.d(TAG, "signIn:" + email);
+                if (!validateForm()) {
+                    return;
+                }
+
+                showProgressDialog();
+
+                // [START sign_in_with_email]
+                mAuth.signInWithEmailAndPassword(email, password)
+                        .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
+
+                                // If sign in fails, display a message to the user. If sign in succeeds
+                                // the auth state listener will be notified and logic to handle the
+                                // signed in user can be handled in the listener.
+                                if (!task.isSuccessful()) {
+                                    Log.w(TAG, "signInWithEmail:failed", task.getException());
+                                    Toast.makeText(PlantMapActivity.this, R.string.auth_failed,
+                                            Toast.LENGTH_SHORT).show();
+                                }
+
+                                // [START_EXCLUDE]
+                                if (!task.isSuccessful()) {
+                                    mStatusTextView.setText(R.string.auth_failed);
+                                }
+                                hideProgressDialog();
+                                // [END_EXCLUDE]
+                            }
+                        });
+                // [END sign_in_with_email]
+            }
+
+            private void signOut() {
+                mAuth.signOut();
+                updateUI(null);
+            }
+
+            private void sendEmailVerification() {
+                // Disable button
+                findViewById(R.id.verify_email_button).setEnabled(false);
+
+                // Send verification email
+                // [START send_email_verification]
+                final FirebaseUser user = mAuth.getCurrentUser();
+                user.sendEmailVerification()
+                        .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                // [START_EXCLUDE]
+                                // Re-enable button
+                                findViewById(R.id.verify_email_button).setEnabled(true);
+
+                                if (task.isSuccessful()) {
+                                    Toast.makeText(PlantMapActivity.this,
+                                            "Verification email sent to " + user.getEmail(),
+                                            Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Log.e(TAG, "sendEmailVerification", task.getException());
+                                    Toast.makeText(PlantMapActivity.this,
+                                            "Failed to send verification email.",
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                                // [END_EXCLUDE]
+                            }
+                        });
+                // [END send_email_verification]
+            }
+
+            private boolean validateForm() {
+                boolean valid = true;
+
+                String email = mEmailField.getText().toString();
+                if (TextUtils.isEmpty(email)) {
+                    mEmailField.setError("Required.");
+                    valid = false;
+                } else {
+                    mEmailField.setError(null);
+                }
+
+                String password = mPasswordField.getText().toString();
+                if (TextUtils.isEmpty(password)) {
+                    mPasswordField.setError("Required.");
+                    valid = false;
+                } else {
+                    mPasswordField.setError(null);
+                }
+
+                return valid;
+            }
+
+            private void updateUI(FirebaseUser user) {
+                hideProgressDialog();
+                if (user != null) {
+                    mStatusTextView.setText(getString(R.string.emailpassword_status_fmt,
+                            user.getEmail(), user.isEmailVerified()));
+                    mDetailTextView.setText(getString(R.string.firebase_status_fmt, user.getUid()));
+
+                    findViewById(R.id.email_password_buttons).setVisibility(View.GONE);
+                    findViewById(R.id.email_password_fields).setVisibility(View.GONE);
+                    findViewById(R.id.signed_in_buttons).setVisibility(View.VISIBLE);
+
+                    findViewById(R.id.verify_email_button).setEnabled(!user.isEmailVerified());
+                } else {
+                    mStatusTextView.setText(R.string.signed_out);
+                    mDetailTextView.setText(null);
+
+                    findViewById(R.id.email_password_buttons).setVisibility(View.VISIBLE);
+                    findViewById(R.id.email_password_fields).setVisibility(View.VISIBLE);
+                    findViewById(R.id.signed_in_buttons).setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onClick(View v) {
+                int i = v.getId();
+                if (i == R.id.email_create_account_button) {
+                    createAccount(mEmailField.getText().toString(), mPasswordField.getText().toString());
+                } else if (i == R.id.email_sign_in_button) {
+                    signIn(mEmailField.getText().toString(), mPasswordField.getText().toString());
+                } else if (i == R.id.sign_out_button) {
+                    signOut();
+                } else if (i == R.id.verify_email_button) {
+                    sendEmailVerification();
+                }
+            }
 
 
     /*
@@ -336,7 +592,80 @@ public class PlantMapActivity extends FragmentActivity implements OnMapReadyCall
         }
     }
 
+            private void addDrawerItems() {
+                String[] osArray = { "Map View", "List View", "Signup/SignIn", "Help", "FAQ" };
+                mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, osArray);
+                mDrawerList.setAdapter(mAdapter);
 
+                mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        Toast.makeText(PlantMapActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            private void setupDrawer() {
+                mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
+
+                    /** Called when a drawer has settled in a completely open state. */
+                    public void onDrawerOpened(View drawerView) {
+                        super.onDrawerOpened(drawerView);
+                        getSupportActionBar().setTitle("Menu");
+                        invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+                    }
+
+                    /** Called when a drawer has settled in a completely closed state. */
+                    public void onDrawerClosed(View view) {
+                        super.onDrawerClosed(view);
+                        getSupportActionBar().setTitle(mActivityTitle);
+                        invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+                    }
+                };
+
+                mDrawerToggle.setDrawerIndicatorEnabled(true);
+                mDrawerLayout.setDrawerListener(mDrawerToggle);
+            }
+
+            @Override
+            protected void onPostCreate(Bundle savedInstanceState) {
+                super.onPostCreate(savedInstanceState);
+                // Sync the toggle state after onRestoreInstanceState has occurred.
+                mDrawerToggle.syncState();
+            }
+
+            @Override
+            public void onConfigurationChanged(Configuration newConfig) {
+                super.onConfigurationChanged(newConfig);
+                mDrawerToggle.onConfigurationChanged(newConfig);
+            }
+
+            @Override
+            public boolean onCreateOptionsMenu(Menu menu) {
+                // Inflate the menu; this adds items to the action bar if it is present.
+                getMenuInflater().inflate(R.menu.menu_main, menu);
+                return true;
+            }
+
+            @Override
+            public boolean onOptionsItemSelected(MenuItem item) {
+                // Handle action bar item clicks here. The action bar will
+                // automatically handle clicks on the Home/Up button, so long
+                // as you specify a parent activity in AndroidManifest.xml.
+                int id = item.getItemId();
+
+                //noinspection SimplifiableIfStatement
+                if (id == R.id.action_settings) {
+                    return true;
+                }
+
+                // Activate the navigation drawer toggle
+                if (mDrawerToggle.onOptionsItemSelected(item)) {
+                    return true;
+                }
+
+                return super.onOptionsItemSelected(item);
+            }
 
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
