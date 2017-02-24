@@ -624,7 +624,7 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
                 };
 
                 mDrawerToggle.setDrawerIndicatorEnabled(true);
-                mDrawerLayout.setDrawerListener(mDrawerToggle);
+                mDrawerLayout.addDrawerListener(mDrawerToggle);
             }
 
             @Override
