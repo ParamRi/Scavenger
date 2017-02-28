@@ -40,7 +40,37 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity><!-- ATTENTION: This was auto-generated to add Google Play services to your project for
+
+        </activity>
+        <activity
+        android:name="com.teamgamma.scavenger.LoginActivity"
+        android:label="@string/app_name"
+            android:parentActivityName="com.teamgamma.scavenger.PlantMapActivity" >
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.teamgamma.scavenger.SignupActivity" />
+    </activity>
+        <activity
+            android:name="com.teamgamma.scavenger.SignupActivity"
+            android:label="@string/app_name"
+            android:parentActivityName="com.teamgamma.scavenger.PlantMapActivity" >
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.teamgamma.scavenger.SignupActivity" />
+        </activity>
+        <activity
+            android:name="com.teamgamma.scavenger.ResetPasswordActivity"
+            android:label="@string/app_name"
+            android:parentActivityName="com.teamgamma.scavenger.PlantMapActivity" >
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.teamgamma.scavenger.SignupActivity" />
+        </activity>
+
+        <!-- ATTENTION: This was auto-generated to add Google Play services to your project for
      App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
         <meta-data
             android:name="com.google.android.gms.version"

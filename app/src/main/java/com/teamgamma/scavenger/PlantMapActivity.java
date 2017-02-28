@@ -3,6 +3,7 @@ package com.teamgamma.scavenger;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.location.Location;
@@ -31,6 +32,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.Manifest;
@@ -103,6 +105,10 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
     private ActionBarDrawerToggle mDrawerToggle;
     private String mActivityTitle;
 
+    private ProgressBar progressBar;
+    private FirebaseAuth.AuthStateListener authListener;
+    private FirebaseAuth auth;
+
 
 
     @Override
@@ -135,6 +141,7 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setTitle("Map");
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -593,17 +600,40 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
     }
 
             private void addDrawerItems() {
-                String[] osArray = { "Map View", "List View", "Signup/SignIn", "Help", "FAQ" };
-                mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, osArray);
+                String[] menuArray = { "Map View", "List View", "SignIn", "SignUp", "Reset Password" };
+                mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, menuArray);
                 mDrawerList.setAdapter(mAdapter);
 
                 mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        Toast.makeText(PlantMapActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
+                          switch (position) {
+                              case 0:
+                                  Toast.makeText(PlantMapActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
+                                  break;
+                              case 1:
+                                  Toast.makeText(PlantMapActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
+                                  break;
+                              case 2: //First item
+
+                                  startActivity(new Intent(PlantMapActivity.this, LoginActivity.class));
+                                           //finish();
+
+                                  break;
+                              case 3: //Second item
+
+                                 startActivity(new Intent(PlantMapActivity.this, SignupActivity.class));
+                                  break;
+
+                                  //Toast.makeText(PlantMapActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
+                              case 4: //Third Item
+
+                                  startActivity(new Intent(PlantMapActivity.this, ResetPasswordActivity.class));
+                                  break;
+                          }
                     }
                 });
-            }
+                }
 
             private void setupDrawer() {
                 mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
@@ -618,7 +648,7 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
                     /** Called when a drawer has settled in a completely closed state. */
                     public void onDrawerClosed(View view) {
                         super.onDrawerClosed(view);
-                        getSupportActionBar().setTitle(mActivityTitle);
+                        getSupportActionBar().setTitle("Map");
                         invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
                     }
                 };

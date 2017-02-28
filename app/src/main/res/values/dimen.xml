@@ -10,5 +10,8 @@
         <dimen name="title_bottom_margin">16dp</dimen>
         <dimen name="field_width_standard">160dp</dimen>
 
+        <dimen name="fab_margin">16dp</dimen>
+        <dimen name="logo_w_h">100dp</dimen>
+
 
 </resources>
