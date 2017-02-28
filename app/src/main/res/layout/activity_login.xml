@@ -74,7 +74,7 @@
             android:textAllCaps="false"
             android:textColor="@color/colorAccent" />
 
-        <!-- Link to Login Screen -->
+        <!-- Link to Signup Screen -->
 
         <Button
             android:id="@+id/btn_signup"
