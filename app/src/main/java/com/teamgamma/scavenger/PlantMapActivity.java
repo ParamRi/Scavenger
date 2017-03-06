@@ -1,33 +1,33 @@
 package com.teamgamma.scavenger;
 
-import android.app.Activity;
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
-import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
-import android.text.TextUtils;
-import android.util.Log;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.*;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -35,12 +35,14 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.Manifest;
-
-import android.text.TextWatcher;
-
 
 import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -49,30 +51,11 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
-import com.google.android.gms.common.ConnectionResult;
-
-import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-
-import android.location.Address;
-import android.location.Geocoder;
-
 import java.io.IOException;
 import java.util.List;
-
-
-import android.view.Menu;
-import android.view.MenuItem;
 
 
 
@@ -108,7 +91,8 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
     private FirebaseAuth.AuthStateListener authListener;
     private FirebaseAuth auth;
 
-
+    private FragmentManager mFragmentManager;
+    private FragmentTransaction mFragmentTransaction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -411,7 +395,7 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
                                   Toast.makeText(PlantMapActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
                                   break;
                               case 1:
-                                  Toast.makeText(PlantMapActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
+                                  startActivity(new Intent(PlantMapActivity.this, PlantListActivity.class));
                                   break;
                               case 2: //Third item
                                   startActivity(new Intent(PlantMapActivity.this, LoginActivity.class));
@@ -565,4 +549,5 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
             // You can add here other case statements according to your requirement.
         }
     }
+
 }
