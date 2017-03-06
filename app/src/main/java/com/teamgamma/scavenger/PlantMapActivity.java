@@ -40,6 +40,7 @@ import android.Manifest;
 import android.text.TextWatcher;
 
 
+import com.facebook.login.LoginManager;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -62,12 +63,14 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
 
 
 import android.location.Address;
 import android.location.Geocoder;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -79,7 +82,8 @@ import android.view.MenuItem;
 public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         OnConnectionFailedListener,
-        LocationListener
+        LocationListener,
+        GoogleMap.OnMapLongClickListener
         {
     private Integer THRESHOLD = 2;
     private DelayAutoCompleteTextView geo_autocomplete;
@@ -92,10 +96,7 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
 
     private FirebaseAuth.AuthStateListener mAuthListener;
     private static final String TAG = "EmailPassword";
-    private TextView mStatusTextView;
-    private TextView mDetailTextView;
-    private EditText mEmailField;
-    private EditText mPasswordField;
+
     public ProgressDialog mProgressDialog;
 
     private ListView mDrawerList;
@@ -185,7 +186,7 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
                     }
                     Address address = addressList.get(0);
                     LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-                    mMap.addMarker(new MarkerOptions().position(latLng).title("Marker"));
+                    //mMap.addMarker(new MarkerOptions().position(latLng).title("Marker"));
                     mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
                     //mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
                 }
@@ -216,7 +217,7 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
                         if (addressList.size() > 0) {
                             Address address = addressList.get(0);
                             LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-                            mMap.addMarker(new MarkerOptions().position(latLng).title("Marker"));
+                            //mMap.addMarker(new MarkerOptions().position(latLng).title("Marker"));
                             mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
                         }
                     }
@@ -225,6 +226,8 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
                 return false;
 
         }});
+
+
 
         geo_autocomplete.addTextChangedListener(new TextWatcher() {
 
@@ -264,6 +267,23 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
 
 
     }
+            @Override
+            public void onMapLongClick(LatLng latLng){
+                MarkerOptions markerOptions = new MarkerOptions();
+                markerOptions.position(latLng);
+                markerOptions.title("New Plant Location");
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                double lat_diff = Math.abs(mLastLocation.getLatitude() - latLng.latitude);
+                double long_diff = Math.abs(mLastLocation.getLatitude() - latLng.latitude);
+                if(mMap !=null && lat_diff < 0.01 && long_diff < 0.01){
+                    mMap.addMarker(markerOptions);
+                }
+                else{
+                    Toast.makeText(PlantMapActivity.this, "You cannot add a new plant this far from your location!", Toast.LENGTH_SHORT).show();
+                }
+
+
+            }
             public void showProgressDialog() {
                 if (mProgressDialog == null) {
                     mProgressDialog = new ProgressDialog(this);
@@ -283,7 +303,20 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
             private void signOut() {
                 auth = FirebaseAuth.getInstance();
                 FirebaseUser user = auth.getCurrentUser();
-                if(user!= null){
+                boolean user_signed_in_through_facebook = false;
+                if(user != null) {
+                    for (UserInfo user_info : FirebaseAuth.getInstance().getCurrentUser().getProviderData()) {
+                        if (user_info.getProviderId().equals("facebook.com")) {
+                            user_signed_in_through_facebook = true;
+                            break;
+                        }
+                    }
+                }
+                if(user_signed_in_through_facebook && user!= null){
+                    auth.signOut();
+                    LoginManager.getInstance().logOut();
+                }
+                else if(user!= null){
                     auth.signOut();
                     Toast.makeText(PlantMapActivity.this, "User Signed Out!", Toast.LENGTH_SHORT).show();
                 }
@@ -325,6 +358,19 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
             mMap.setMyLocationEnabled(true);
         }
 
+        List<MarkerOptions> myMarkerOptionsList =  new ArrayList<MarkerOptions>();
+
+        //Randomly populating 10 plant locations in Atlanta
+        for(int i =0; i<10; i++){
+            LatLng latLng = new LatLng(33.76 +(i*0.1), -84.42+(i*0.1));
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(latLng);
+            markerOptions.title("Plant Location:"+i);
+            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+            myMarkerOptionsList.add(markerOptions);
+        }
+
+        populateMarkersOnMap(mMap, myMarkerOptionsList);
         // Add a marker in Sydney and move the camera
         /*
         LatLng sydney = new LatLng(-34, 151);
@@ -333,6 +379,27 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
         */
+
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener()
+        {
+
+            @Override
+            public boolean onMarkerClick(Marker arg0) {
+                //if(arg0.getTitle().equals("MyHome")) // if marker source is clicked
+                    Toast.makeText(PlantMapActivity.this, arg0.getTitle(), Toast.LENGTH_SHORT).show();// display toast
+                startActivity(new Intent(PlantMapActivity.this, PlantDescriptionActivity.class));
+                return false;
+            }
+
+        });
+        mMap.setOnMapLongClickListener(this);
+    }
+
+    public void populateMarkersOnMap(GoogleMap googleMap, List<MarkerOptions> myMarkerOptionsList){
+        mMap = googleMap;
+        for(MarkerOptions mo: myMarkerOptionsList){
+           mMap.addMarker(mo);
+        }
     }
 
     protected synchronized void buildGoogleApiClient(){
@@ -385,7 +452,7 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
         markerOptions.position(latLng);
         markerOptions.title("Current Position");
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
-        mCurrLocationMarker = mMap.addMarker(markerOptions);
+        //mCurrLocationMarker = mMap.addMarker(markerOptions);
 
         //move map camera
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
@@ -397,45 +464,63 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
         }
     }
 
-            private void addDrawerItems() {
+    private void addDrawerItems() {
 
-                String[] menuArray = { "Map View", "List View", "SignIn", "SignUp", "Sign Out", "Manage Account" };
-                mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, menuArray);
-                mDrawerList.setAdapter(mAdapter);
+        String[] menuArray = { "Map View", "List View", "SignIn", "SignUp", "Sign Out", "Manage Account" };
+        mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, menuArray);
+        mDrawerList.setAdapter(mAdapter);
 
-                mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                          switch (position) {
-                              case 0:
-                                  Toast.makeText(PlantMapActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
-                                  break;
-                              case 1:
-                                  Toast.makeText(PlantMapActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
-                                  break;
-                              case 2: //Third item
-                                  startActivity(new Intent(PlantMapActivity.this, LoginActivity.class));
-                                           //finish();
+          switch (position) {
+              case 0:
+                  Toast.makeText(PlantMapActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
+                  break;
+              case 1:
+                  Toast.makeText(PlantMapActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
+                  break;
+              /*
+              case 2:
+                  auth = FirebaseAuth.getInstance();
+                  FirebaseUser user = auth.getCurrentUser();
+                  if(user != null){
+                      LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+                      MarkerOptions markerOptions = new MarkerOptions();
+                      markerOptions.position(latLng);
+                      markerOptions.title("New Plant Location");
+                      markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                      if(mMap !=null){
+                          mMap.addMarker(markerOptions);
+                      }
+                  }
+                  else{
+                      Toast.makeText(PlantMapActivity.this, "Please signin to add a new plant!", Toast.LENGTH_SHORT).show();
+                  }
+                  break;
+              */
+              case 2: //Third item
+                  startActivity(new Intent(PlantMapActivity.this, LoginActivity.class));
+                           //finish();
+                 break;
+              case 3: //Fourth item
 
-                                  break;
-                              case 3: //Fourth item
+                 startActivity(new Intent(PlantMapActivity.this, SignupActivity.class));
+                  break;
 
-                                 startActivity(new Intent(PlantMapActivity.this, SignupActivity.class));
-                                  break;
+                  //Toast.makeText(PlantMapActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
+              case 4:
+                  signOut();
+                  break;
 
-                                  //Toast.makeText(PlantMapActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
-                              case 4:
-                                  signOut();
-                                  break;
+              case 5:
+                  startActivity(new Intent(PlantMapActivity.this, ManageAccountActivity.class));
+                  break;
 
-                              case 5:
-                                  startActivity(new Intent(PlantMapActivity.this, ManageAccountActivity.class));
-                                  break;
-
-                          }
-                    }
+          }
+    }
                 });
-                }
+  }
 
             private void setupDrawer() {
                 mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {

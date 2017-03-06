@@ -29,7 +29,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText inputEmail, inputPassword;
     private FirebaseAuth auth;
     private ProgressBar progressBar;
-    private Button btnSignup, btnLogin, btnReset;
+    private Button btnSignup, btnLogin, btnReset, btnFBLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +40,7 @@ public class LoginActivity extends AppCompatActivity {
 
         if (auth.getCurrentUser() != null) {
             startActivity(new Intent(LoginActivity.this, PlantMapActivity.class));
+
             finish();
         }
 
@@ -57,13 +58,25 @@ public class LoginActivity extends AppCompatActivity {
         btnSignup = (Button) findViewById(R.id.btn_signup);
         btnLogin = (Button) findViewById(R.id.btn_login);
         btnReset = (Button) findViewById(R.id.btn_reset_password);
+        btnFBLogin = (Button) findViewById(R.id.btn_fb_login);
+
+
+
 
         //Get Firebase auth instance
         auth = FirebaseAuth.getInstance();
 
+        btnFBLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(LoginActivity.this, FaceBookLoginActivity.class));
+            }
+        });
+
         btnSignup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Toast.makeText(LoginActivity.this, "User Already Logged in!", Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(LoginActivity.this, SignupActivity.class));
             }
         });

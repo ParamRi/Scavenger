@@ -21,6 +21,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
 
 public class ManageAccountActivity extends AppCompatActivity {
 
@@ -32,20 +33,40 @@ public class ManageAccountActivity extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener authListener;
     private FirebaseAuth auth;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_manage_account);
+        auth = FirebaseAuth.getInstance();
+        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        boolean user_signed_in_through_facebook = false;
+        if(user != null) {
+            for (UserInfo user_info : FirebaseAuth.getInstance().getCurrentUser().getProviderData()) {
+                if (user_info.getProviderId().equals("facebook.com")) {
+                    user_signed_in_through_facebook = true;
+                    break;
+                }
+            }
+        }
+        if(user_signed_in_through_facebook ){
+            //startActivity(new Intent(ManageAccountActivity.this, FaceBookLoginActivity.class));
+            Toast.makeText(ManageAccountActivity.this, "You are logged in through facebook!", Toast.LENGTH_SHORT).show();
+            finish();
+        }
+        else{
+            setContentView(R.layout.activity_manage_account);
+        }
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setTitle("Manage Account");
 
         //get firebase auth instance
-        auth = FirebaseAuth.getInstance();
+
 
         //get current user
-        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
 
         authListener = new FirebaseAuth.AuthStateListener() {
             @Override
