@@ -24,7 +24,7 @@ import com.google.firebase.auth.FirebaseAuth;
 public class SignupActivity extends AppCompatActivity {
 
     private EditText inputEmail, inputPassword;
-    private Button btnSignIn, btnSignUp, btnResetPassword;
+    private Button btnSignIn, btnSignUp, btnResetPassword, btnFBLogin;
     private ProgressBar progressBar;
     private FirebaseAuth auth;
 
@@ -45,6 +45,15 @@ public class SignupActivity extends AppCompatActivity {
         inputPassword = (EditText) findViewById(R.id.password);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         btnResetPassword = (Button) findViewById(R.id.btn_reset_password);
+
+        btnFBLogin = (Button) findViewById(R.id.btn_fb_login);
+
+        btnFBLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(SignupActivity.this, FaceBookLoginActivity.class));
+            }
+        });
 
         btnResetPassword.setOnClickListener(new View.OnClickListener() {
             @Override

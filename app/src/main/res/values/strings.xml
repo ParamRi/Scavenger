@@ -6,7 +6,9 @@
 
     <string name="label_google_sign_in">Firebase + Google Sign In</string>
     <string name="desc_google_sign_in">Use a Google Sign In credential to authenticate with Firebase.</string>
-
+    <string name="btn_fb_login">Use Facebook Login</string>
+    <string name="firebase_error_login">Firebase Login Error</string>
+    <string name="facebook_app_id">1862040254053363</string>
     <string name="label_facebook_login">Firebase + Facebook Login</string>
     <string name="desc_facebook_login">Use a Facebook Login credential to authenticate with Firebase.</string>
 
