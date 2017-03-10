@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "198217203971-3hb1cq1pksu89u60s83mrsirhvj40ks6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.teamgamma.scavenger",
+            "certificate_hash": "21878230634b251911ace2a2863a6d9cd6139f40"
+          }
+        },
+        {
           "client_id": "198217203971-aigsojc6uc5g968rn61ao68ecjjaa5aq.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +37,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "198217203971-aigsojc6uc5g968rn61ao68ecjjaa5aq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2

@@ -28,20 +28,23 @@
              sign the APK for publishing.
              You can define the keys for the debug and release targets in src/debug/ and src/release/. 
         -->
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_key" />
+
 
         <activity
             android:name=".PlantMapActivity"
-            android:label="@string/title_activity_plant_map"></activity>
+            android:label="@string/title_activity_plant_map">
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.teamgamma.scavenger.MainActivity" />
+        </activity>
         <!--
  ATTENTION: This was auto-generated to add Google Play services to your project for
      App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.
         -->
         <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
 
         <activity
             android:name=".MainActivity"
@@ -49,9 +52,53 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
+        <activity
+        android:name="com.teamgamma.scavenger.LoginActivity"
+        android:label="@string/app_name"
+            android:parentActivityName="com.teamgamma.scavenger.MainActivity" >
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.teamgamma.scavenger.MainActivity" />
+    </activity>
+        <activity
+            android:name="com.teamgamma.scavenger.SignupActivity"
+            android:label="@string/app_name"
+            android:parentActivityName="com.teamgamma.scavenger.MainActivity" >
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.teamgamma.scavenger.MainActivity" />
+        </activity>
+        <activity
+            android:name="com.teamgamma.scavenger.ResetPasswordActivity"
+            android:label="@string/app_name"
+            android:parentActivityName="com.teamgamma.scavenger.MainActivity" >
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.teamgamma.scavenger.MainActivity" />
+        </activity>
+        <activity
+            android:name="com.teamgamma.scavenger.ManageAccountActivity"
+            android:label="@string/app_name"
+            android:parentActivityName="com.teamgamma.scavenger.MainActivity" >
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.teamgamma.scavenger.MainActivity" />
+        </activity>
+
+        <!-- ATTENTION: This was auto-generated to add Google Play services to your project for
+     App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
     </application>
 
 </manifest>
