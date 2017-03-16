@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/googleg_standard_color_18"
+        android:id="@+id/plantImageView"
+        android:layout_weight="0.38" />
+
+    <EditText
+        android:id="@+id/plantNameText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="Plant Name" />
+
+    <EditText
+        android:id="@+id/sciNameText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="Scientific Name"/>
+
+    <CheckBox
+        android:id="@+id/checkBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.38"
+        android:text="Edibile" />
+
+    <EditText
+        android:id="@+id/descriptionTextEditor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.38"
+        android:ems="10"
+        android:inputType="textMultiLine"
+        android:text="Add Description" />
+
+    <Button
+        android:id="@+id/addPlantButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.04"
+        android:text="Add Plant" />
+
+    <Button
+        android:text="Add Photo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/addImageButton"
+        android:layout_weight="0.03" />
+</LinearLayout>

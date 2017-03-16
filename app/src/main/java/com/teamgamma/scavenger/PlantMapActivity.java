@@ -31,7 +31,6 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -57,6 +56,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
+import com.teamgamma.scavenger.plant.AddPlantActivity;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -250,13 +250,16 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
 
             }
         });
-
+        /*
+        Floating Action Button to add current location
+         */
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+                startActivity(new Intent(PlantMapActivity.this, AddPlantActivity.class));
             }
         });
     }

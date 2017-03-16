@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "198217203971-3sd5l2ruajd460kl8mjjf7im5jtv92pj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.teamgamma.scavenger",
+            "certificate_hash": "48923a8f8f9cd26380ecd95f181624d6fce53e14"
+          }
+        },
+        {
           "client_id": "198217203971-3hb1cq1pksu89u60s83mrsirhvj40ks6.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

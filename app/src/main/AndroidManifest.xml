@@ -5,13 +5,14 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
          location permissions for the 'MyLocation' functionality.
     -->
-
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -40,85 +41,103 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
         <activity
-            android:name="com.teamgamma.scavenger.PlantListActivity"
+            android:name=".PlantListActivity"
             android:label="Plant List"
-            android:parentActivityName="com.teamgamma.scavenger.PlantMapActivity" >
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.teamgamma.scavenger.PlantMapActivity" />
-        </activity>
-        <activity
-        android:name="com.teamgamma.scavenger.LoginActivity"
-        android:label="@string/app_name"
-            android:parentActivityName="com.teamgamma.scavenger.PlantMapActivity" >
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.teamgamma.scavenger.PlantMapActivity" />
-    </activity>
-        <activity
-            android:name="com.teamgamma.scavenger.SignupActivity"
-            android:label="@string/app_name"
-            android:parentActivityName="com.teamgamma.scavenger.PlantMapActivity" >
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.teamgamma.scavenger.PlantMapActivity" />
-        </activity>
-        <activity
-            android:name="com.teamgamma.scavenger.PlantDescriptionActivity"
-            android:label="@string/app_name"
-            android:parentActivityName="com.teamgamma.scavenger.PlantMapActivity" >
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.teamgamma.scavenger.PlantMapActivity" />
-        </activity>
-        <activity
-            android:name="com.teamgamma.scavenger.ResetPasswordActivity"
-            android:label="@string/app_name"
-            android:parentActivityName="com.teamgamma.scavenger.PlantMapActivity" >
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.teamgamma.scavenger.PlantMapActivity" />
-        </activity>
-        <activity
-            android:name="com.teamgamma.scavenger.ManageAccountActivity"
-            android:label="@string/app_name"
-            android:parentActivityName="com.teamgamma.scavenger.PlantMapActivity" >
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.teamgamma.scavenger.PlantMapActivity" />
-        </activity>
+            android:parentActivityName=".PlantMapActivity">
 
-        <activity android:name="com.facebook.FacebookActivity"
-            android:configChanges=
-                "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.teamgamma.scavenger.PlantMapActivity" />
+        </activity>
+        <activity
+            android:name=".LoginActivity"
+            android:label="@string/app_name"
+            android:parentActivityName=".PlantMapActivity">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.teamgamma.scavenger.PlantMapActivity" />
+        </activity>
+        <activity
+            android:name=".SignupActivity"
+            android:label="@string/app_name"
+            android:parentActivityName=".PlantMapActivity">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.teamgamma.scavenger.PlantMapActivity" />
+        </activity>
+        <activity
+            android:name=".PlantDescriptionActivity"
+            android:label="@string/app_name"
+            android:parentActivityName=".PlantMapActivity">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.teamgamma.scavenger.PlantMapActivity" />
+        </activity>
+        <activity
+            android:name=".ResetPasswordActivity"
+            android:label="@string/app_name"
+            android:parentActivityName=".PlantMapActivity">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.teamgamma.scavenger.PlantMapActivity" />
+        </activity>
+        <activity
+            android:name=".plant.AddPlantActivity"
+            android:label="@string/app_name"
+            android:parentActivityName=".PlantMapActivity">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.teamgamma.scavenger.PlantMapActivity" />
+        </activity>
+        <activity
+            android:name=".ManageAccountActivity"
+            android:label="@string/app_name"
+            android:parentActivityName=".PlantMapActivity">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.teamgamma.scavenger.PlantMapActivity" />
+        </activity>
+        <activity
+            android:name="com.facebook.FacebookActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name" />
-
         <activity android:name=".FaceBookLoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>
+
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.teamgamma.scavenger.PlantMapActivity" />
         </activity>
+
         <meta-data
-            android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
 
-
-        <!-- ATTENTION: This was auto-generated to add Google Play services to your project for
-     App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
+        <!--
+     ATTENTION: This was auto-generated to add Google Play services to your project for
+     App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.
+        -->
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
+
     </application>
 
 </manifest>
