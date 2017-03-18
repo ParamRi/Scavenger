@@ -101,8 +101,7 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
         createPlant = new Plant(plantNameText.getText().toString(), plantSciNameText.getText().toString(),
                 plantDescText.getText().toString(),
                 edibilityCheckBox.isChecked(), false, new LatLng(latitude, longitude));
-        API api = new API();
-        api.addPlant(createPlant);
+        API.getReference().
     }
 
     @Override

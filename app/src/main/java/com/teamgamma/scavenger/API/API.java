@@ -13,13 +13,16 @@ import java.util.List;
  */
 
 public class API {
-    private DatabaseReference reference;
+    private static DatabaseReference reference;
 
     public API() {
         reference = FirebaseDatabase.getInstance().getReference();
     }
 
-    public DatabaseReference getReference() {
+    public static DatabaseReference getReference() {
+        if (null == reference) {
+            reference = FirebaseDatabase.getInstance().getReference();
+        }
         return reference;
     }
 
