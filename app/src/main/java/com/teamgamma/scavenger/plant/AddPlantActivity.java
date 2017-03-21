@@ -15,12 +15,13 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 
-import com.google.android.gms.location.LocationListener;
+import android.location.LocationListener;
+//import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.maps.model.LatLng;
 import com.teamgamma.scavenger.API.API;
 import com.teamgamma.scavenger.R;
 
-public class AddPlantActivity extends AppCompatActivity implements View.OnClickListener, com.google.android.gms.location.LocationListener {
+public class AddPlantActivity extends AppCompatActivity implements View.OnClickListener, android.location.LocationListener {
     protected LocationManager locationManager;
     protected LocationListener locationListener;
     protected Location location;
@@ -105,6 +106,21 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onLocationChanged(Location location) {
+
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
 
     }
 
