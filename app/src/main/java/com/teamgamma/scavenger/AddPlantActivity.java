@@ -1,4 +1,4 @@
-package com.teamgamma.scavenger.plant;
+package com.teamgamma.scavenger;
 
 import android.Manifest;
 import android.content.Context;
@@ -18,9 +18,9 @@ import android.widget.ImageView;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.maps.model.LatLng;
 import com.teamgamma.scavenger.API.API;
-import com.teamgamma.scavenger.R;
+import com.teamgamma.scavenger.plant.Plant;
 
-public class AddPlantActivity extends AppCompatActivity implements View.OnClickListener, com.google.android.gms.location.LocationListener {
+public class AddPlantActivity extends AppCompatActivity implements com.google.android.gms.location.LocationListener {
     protected LocationManager locationManager;
     protected LocationListener locationListener;
     protected Location location;
@@ -87,8 +87,19 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
         plantDescText = (EditText) findViewById(R.id.descriptionTextEditor);
         edibilityCheckBox = (CheckBox) findViewById(R.id.checkBox);
         addPlantButton = (Button) findViewById(R.id.addPlantButton);
+        addPlantButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addPlant(v);
+            }
+        });
         addImageButton = (Button) findViewById(R.id.addImageButton);
-        addImageButton.setOnClickListener(this);
+        addImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
 
     }
 
@@ -100,7 +111,7 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
                 plantDescText.getText().toString(),
                 edibilityCheckBox.isChecked(), false, new LatLng(latitude, longitude));
         API.getReference().child("plants").push().setValue(createPlant);
-        System.out.println("added plant");
+        Log.d("AddPlantActivity", "added plant");
     }
 
     @Override
@@ -108,12 +119,4 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
 
     }
 
-    @Override
-    public void onClick(View view) {
-        if(view == addPlantButton) {
-            //addPlant();
-        } else if (view == addImageButton) {
-
-        }
-    }
 }

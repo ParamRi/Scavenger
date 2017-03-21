@@ -56,7 +56,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
-import com.teamgamma.scavenger.plant.AddPlantActivity;
 
 import java.io.IOException;
 import java.util.ArrayList;
