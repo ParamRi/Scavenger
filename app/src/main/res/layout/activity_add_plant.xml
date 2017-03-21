@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AddPlantActivity">
+    tools:context=".plant.AddPlantActivity">
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="Plant Name" />
+        android:hint="Plant Name" />
 
     <EditText
         android:id="@+id/sciNameText"
@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="Scientific Name"/>
+        android:hint="Scientific Name"/>
 
     <CheckBox
         android:id="@+id/checkBox"
@@ -43,7 +43,7 @@
         android:layout_weight="0.38"
         android:ems="10"
         android:inputType="textMultiLine"
-        android:text="Add Description" />
+        android:hint="Add Description" />
 
     <Button
         android:id="@+id/addPlantButton"

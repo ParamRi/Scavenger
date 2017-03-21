@@ -1,4 +1,4 @@
-package com.teamgamma.scavenger;
+package com.teamgamma.scavenger.plant;
 
 import android.Manifest;
 import android.content.Context;
@@ -15,12 +15,13 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 
-import com.google.android.gms.location.LocationListener;
+import android.location.LocationListener;
+//import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.maps.model.LatLng;
 import com.teamgamma.scavenger.API.API;
-import com.teamgamma.scavenger.plant.Plant;
+import com.teamgamma.scavenger.R;
 
-public class AddPlantActivity extends AppCompatActivity implements com.google.android.gms.location.LocationListener {
+public class AddPlantActivity extends AppCompatActivity implements View.OnClickListener, android.location.LocationListener {
     protected LocationManager locationManager;
     protected LocationListener locationListener;
     protected Location location;
@@ -87,19 +88,8 @@ public class AddPlantActivity extends AppCompatActivity implements com.google.an
         plantDescText = (EditText) findViewById(R.id.descriptionTextEditor);
         edibilityCheckBox = (CheckBox) findViewById(R.id.checkBox);
         addPlantButton = (Button) findViewById(R.id.addPlantButton);
-        addPlantButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                addPlant(v);
-            }
-        });
         addImageButton = (Button) findViewById(R.id.addImageButton);
-        addImageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
+        addImageButton.setOnClickListener(this);
 
     }
 
@@ -111,7 +101,7 @@ public class AddPlantActivity extends AppCompatActivity implements com.google.an
                 plantDescText.getText().toString(),
                 edibilityCheckBox.isChecked(), false, new LatLng(latitude, longitude));
         API.getReference().child("plants").push().setValue(createPlant);
-        Log.d("AddPlantActivity", "added plant");
+        System.out.println("added plant");
     }
 
     @Override
@@ -119,4 +109,27 @@ public class AddPlantActivity extends AppCompatActivity implements com.google.an
 
     }
 
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
+    }
+
+    @Override
+    public void onClick(View view) {
+        if(view == addPlantButton) {
+            //addPlant();
+        } else if (view == addImageButton) {
+
+        }
+    }
 }

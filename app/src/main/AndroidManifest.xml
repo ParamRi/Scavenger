@@ -93,7 +93,7 @@
                 android:value="com.teamgamma.scavenger.PlantMapActivity" />
         </activity>
         <activity
-            android:name=".AddPlantActivity"
+            android:name=".plant.AddPlantActivity"
             android:label="Add Plant"
             android:parentActivityName=".PlantMapActivity">
 
