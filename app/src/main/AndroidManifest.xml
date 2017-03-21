@@ -94,7 +94,7 @@
         </activity>
         <activity
             android:name=".plant.AddPlantActivity"
-            android:label="@string/app_name"
+            android:label="Add Plant"
             android:parentActivityName=".PlantMapActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->

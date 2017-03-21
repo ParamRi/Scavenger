@@ -88,8 +88,6 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
         edibilityCheckBox = (CheckBox) findViewById(R.id.checkBox);
         addPlantButton = (Button) findViewById(R.id.addPlantButton);
         addImageButton = (Button) findViewById(R.id.addImageButton);
-
-        addPlantButton.setOnClickListener(this);
         addImageButton.setOnClickListener(this);
 
     }
@@ -97,11 +95,12 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
     /**
      * addPlant() builds and uploads a plant object onto the database
      */
-    private void addPlant() {
+    public void addPlant(View view) {
         createPlant = new Plant(plantNameText.getText().toString(), plantSciNameText.getText().toString(),
                 plantDescText.getText().toString(),
                 edibilityCheckBox.isChecked(), false, new LatLng(latitude, longitude));
-        API.getReference().
+        API.getReference().child("plants").push().setValue(createPlant);
+        System.out.println("added plant");
     }
 
     @Override
@@ -112,7 +111,7 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
     @Override
     public void onClick(View view) {
         if(view == addPlantButton) {
-            addPlant();
+            //addPlant();
         } else if (view == addImageButton) {
 
         }
