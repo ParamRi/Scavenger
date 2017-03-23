@@ -3,6 +3,8 @@ package com.teamgamma.scavenger.API;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.teamgamma.scavenger.plant.Plant;
 
 import java.util.ArrayList;
@@ -13,21 +15,28 @@ import java.util.List;
  */
 
 public class API {
-    private static DatabaseReference reference;
+    private static DatabaseReference databaseReference;
+    private static StorageReference storageReference;
 
     public API() {
-        reference = FirebaseDatabase.getInstance().getReference();
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        storageReference = FirebaseStorage.getInstance().getReference();
     }
 
-    public static DatabaseReference getReference() {
-        if (null == reference) {
-            reference = FirebaseDatabase.getInstance().getReference();
+    public static DatabaseReference getDatabseReference() {
+        if (null == databaseReference) {
+            databaseReference = FirebaseDatabase.getInstance().getReference();
         }
-        return reference;
+        return databaseReference;
     }
-
+    public static StorageReference getStorageReference() {
+        if (null == storageReference) {
+            storageReference = FirebaseStorage.getInstance().getReference();
+        }
+        return storageReference;
+    }
     public void addPlant(Plant newPlant) {
-        reference.setValue(newPlant);
+        databaseReference.setValue(newPlant);
 
     }
 

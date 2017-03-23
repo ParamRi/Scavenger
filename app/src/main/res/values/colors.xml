@@ -8,5 +8,6 @@
     <color name="darkGreen">#233715</color>color>
     <color name="grey_100">#F5F5F5</color>
     <color name="grey_300">#E0E0E0</color>
-
+    <color name="colorFAB">#2196F3</color>
+    <color name="colorFAB2">#E040FB</color>
 </resources>

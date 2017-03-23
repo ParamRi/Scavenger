@@ -3,6 +3,7 @@ package com.teamgamma.scavenger;
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -20,6 +21,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -27,6 +29,8 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -50,6 +54,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -61,7 +66,7 @@ import com.teamgamma.scavenger.plant.AddPlantActivity;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Map;
 
 
 public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCallback,
@@ -73,6 +78,7 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
     private Integer THRESHOLD = 2;
     private DelayAutoCompleteTextView geo_autocomplete;
     private ImageView geo_autocomplete_clear;
+    private ImageView image_marker_pin;
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
@@ -96,6 +102,9 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
 
     private FragmentManager mFragmentManager;
     private FragmentTransaction mFragmentTransaction;
+    private boolean isFabOpen = false;
+    private FloatingActionButton fab,fab1,fab2;
+    private Animation fab_open,fab_close,rotate_forward,rotate_backward;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,7 +115,12 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
 
         mDrawerList = (ListView)findViewById(R.id.navList);mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         mActivityTitle = getTitle().toString();
-
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab2 = (FloatingActionButton) findViewById(R.id.fab2);
+        fab_open = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open);
+        fab_close = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.fab_close);
+        rotate_forward = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.rotate_forward);
+        rotate_backward = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.rotate_backward);
         addDrawerItems();
         setupDrawer();
 
@@ -129,7 +143,7 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
         }
 
         geo_autocomplete_clear = (android.widget.ImageView) findViewById(R.id.geo_autocomplete_clear);
-
+        image_marker_pin = (android.widget.ImageView) findViewById(R.id.image_pin_marker);
         geo_autocomplete = (DelayAutoCompleteTextView) findViewById(R.id.geo_autocomplete);
         geo_autocomplete.setThreshold(THRESHOLD);
         geo_autocomplete.setAdapter(new GeoAutoCompleteAdapter(this)); // 'this' is Activity instance
@@ -253,13 +267,36 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
         /*
         Floating Action Button to add current location
          */
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+
+                image_marker_pin.setVisibility(View.VISIBLE);
+                animateFAB();
+                /*image_marker_pin.setVisibility(View.VISIBLE);
+                fab2.show();
+                fab.hide();
+                */
+                //startActivity(new Intent(PlantMapActivity.this, AddPlantActivity.class));
+
+            }
+        });
+
+        fab2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Add Plant Details", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
-                startActivity(new Intent(PlantMapActivity.this, AddPlantActivity.class));
+                image_marker_pin.setVisibility(View.GONE);
+                CameraPosition cameraPosition = mMap.getCameraPosition();
+                LatLng camLocation = cameraPosition.target;
+                Intent i = new  Intent(PlantMapActivity.this, AddPlantActivity.class);
+                i.putExtra("LatLng",camLocation);
+                startActivity(i);
+                animateFAB();
+                //fab.show();
+                //fab2.hide();
             }
         });
     }
@@ -348,6 +385,9 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
                 buildGoogleApiClient();
                 mMap.setMyLocationEnabled(true);
             }
+            else{
+                checkLocationPermission();
+            }
         }
         else {
             buildGoogleApiClient();
@@ -389,6 +429,7 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
 
         });
         mMap.setOnMapLongClickListener(this);
+
     }
 
     public void populateMarkersOnMap(GoogleMap googleMap, List<MarkerOptions> myMarkerOptionsList){
@@ -562,7 +603,32 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
                 return super.onOptionsItemSelected(item);
             }
 
+            public void animateFAB(){
 
+                if(isFabOpen){
+
+                    fab.startAnimation(rotate_backward);
+                    //fab1.startAnimation(fab_close);
+                    fab2.startAnimation(fab_close);
+                    //fab1.setClickable(false);
+                    fab2.setClickable(false);
+                    isFabOpen = false;
+                    image_marker_pin.setVisibility(View.GONE);
+
+
+                } else {
+                    Toast.makeText(this, "Set Pin at the new plant location", Toast.LENGTH_LONG).show();
+                    fab.startAnimation(rotate_forward);
+                    //fab1.startAnimation(fab_open);
+                    fab2.startAnimation(fab_open);
+                    //fab1.setClickable(true);
+                    fab2.setClickable(true);
+                    image_marker_pin.setVisibility(View.VISIBLE);
+                    isFabOpen = true;
+
+
+                }
+            }
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     public boolean checkLocationPermission(){
         if (ContextCompat.checkSelfPermission(this,
@@ -576,12 +642,25 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
                 // Show an explanation to the user *asynchronously* -- don't block
                 // this thread waiting for the user's response! After the user
                 // sees the explanation, try again to request the permission.
-
+                new AlertDialog.Builder(PlantMapActivity.this)
+                        .setMessage("To show the location the permission is needed")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                ActivityCompat.requestPermissions(PlantMapActivity.this,
+                                        new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                                        MY_PERMISSIONS_REQUEST_LOCATION);
+                            }
+                        })
+                        .setNegativeButton("Cancel", null)
+                        .create()
+                        .show();
                 //Prompt the user once explanation has been shown
+                /*
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         MY_PERMISSIONS_REQUEST_LOCATION);
-
+                */
 
             } else {
                 // No explanation needed, we can request the permission.
