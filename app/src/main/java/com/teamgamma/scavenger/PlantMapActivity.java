@@ -56,7 +56,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
+import com.teamgamma.scavenger.API.API;
 import com.teamgamma.scavenger.plant.AddPlantActivity;
+import com.teamgamma.scavenger.plant.Plant;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -355,13 +357,12 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
         }
 
         List<MarkerOptions> myMarkerOptionsList =  new ArrayList<MarkerOptions>();
-
-        //Randomly populating 10 plant locations in Atlanta
-        for(int i =0; i<10; i++){
-            LatLng latLng = new LatLng(33.76 +(i*0.1), -84.42+(i*0.1));
+        List<Plant> plantList = API.getPlants(new LatLng(33, -84)); //using temporary latlong until I get my geolocation working
+        for(int i = 0; i < plantList.size(); i++) {
+            LatLng latlng = plantList.get(i).getLocation();
             MarkerOptions markerOptions = new MarkerOptions();
-            markerOptions.position(latLng);
-            markerOptions.title("Plant Location:"+i);
+            markerOptions.position(latlng);
+            markerOptions.title(plantList.get(i).getPlantName());
             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
             myMarkerOptionsList.add(markerOptions);
         }

@@ -17,6 +17,7 @@ import android.widget.ImageView;
 
 import android.location.LocationListener;
 //import com.google.android.gms.location.LocationListener;
+import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.maps.model.LatLng;
 import com.teamgamma.scavenger.API.API;
 import com.teamgamma.scavenger.R;
@@ -100,7 +101,9 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
         createPlant = new Plant(plantNameText.getText().toString(), plantSciNameText.getText().toString(),
                 plantDescText.getText().toString(),
                 edibilityCheckBox.isChecked(), false, new LatLng(latitude, longitude));
-        API.getReference().child("plants").push().setValue(createPlant);
+        String plantId = API.getReference().child("plants").push().getKey();
+        API.getReference().child("plants").child(plantId).setValue(createPlant);
+        API.getGeoFire().setLocation(plantId, new GeoLocation(latitude, longitude));
         System.out.println("added plant");
     }
 
