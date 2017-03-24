@@ -3,6 +3,7 @@ package com.teamgamma.scavenger;
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -20,6 +21,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -27,6 +29,8 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -38,6 +42,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.login.LoginManager;
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
+import com.firebase.geofire.GeoQuery;
+import com.firebase.geofire.GeoQueryEventListener;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -50,31 +58,36 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.teamgamma.scavenger.API.API;
 import com.teamgamma.scavenger.plant.AddPlantActivity;
 import com.teamgamma.scavenger.plant.Plant;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
+import java.util.Map;
 
 
 public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         OnConnectionFailedListener,
         LocationListener,
-        GoogleMap.OnMapLongClickListener
-        {
+        GoogleMap.OnMapLongClickListener {
     private Integer THRESHOLD = 2;
     private DelayAutoCompleteTextView geo_autocomplete;
     private ImageView geo_autocomplete_clear;
+    private ImageView image_marker_pin;
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
@@ -95,9 +108,14 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
     private ProgressBar progressBar;
     private FirebaseAuth.AuthStateListener authListener;
     private FirebaseAuth auth;
+    private GeoFire mGeoFire;
+    private Map<String, Marker> hashMarkers;
 
     private FragmentManager mFragmentManager;
     private FragmentTransaction mFragmentTransaction;
+    private boolean isFabOpen = false;
+    private FloatingActionButton fab,fab1,fab2;
+    private Animation fab_open,fab_close,rotate_forward,rotate_backward;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,9 +126,17 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
 
         mDrawerList = (ListView)findViewById(R.id.navList);mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         mActivityTitle = getTitle().toString();
-
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab2 = (FloatingActionButton) findViewById(R.id.fab2);
+        fab_open = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open);
+        fab_close = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.fab_close);
+        rotate_forward = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.rotate_forward);
+        rotate_backward = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.rotate_backward);
         addDrawerItems();
         setupDrawer();
+
+        //set up hashMap of Markers
+        hashMarkers = new HashMap<String, Marker>();
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -131,7 +157,7 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
         }
 
         geo_autocomplete_clear = (android.widget.ImageView) findViewById(R.id.geo_autocomplete_clear);
-
+        image_marker_pin = (android.widget.ImageView) findViewById(R.id.image_pin_marker);
         geo_autocomplete = (DelayAutoCompleteTextView) findViewById(R.id.geo_autocomplete);
         geo_autocomplete.setThreshold(THRESHOLD);
         geo_autocomplete.setAdapter(new GeoAutoCompleteAdapter(this)); // 'this' is Activity instance
@@ -255,18 +281,42 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
         /*
         Floating Action Button to add current location
          */
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+
+                image_marker_pin.setVisibility(View.VISIBLE);
+                animateFAB();
+                /*image_marker_pin.setVisibility(View.VISIBLE);
+                fab2.show();
+                fab.hide();
+                */
+                //startActivity(new Intent(PlantMapActivity.this, AddPlantActivity.class));
+
+            }
+        });
+
+        fab2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Add Plant Details", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
-                startActivity(new Intent(PlantMapActivity.this, AddPlantActivity.class));
+                image_marker_pin.setVisibility(View.GONE);
+                CameraPosition cameraPosition = mMap.getCameraPosition();
+                LatLng camLocation = cameraPosition.target;
+                Intent i = new  Intent(PlantMapActivity.this, AddPlantActivity.class);
+                i.putExtra("LatLng",camLocation);
+                startActivity(i);
+                animateFAB();
+                //fab.show();
+                //fab2.hide();
             }
         });
     }
-            @Override
-            public void onMapLongClick(LatLng latLng){
+
+    @Override
+    public void onMapLongClick(LatLng latLng){
                 MarkerOptions markerOptions = new MarkerOptions();
                 markerOptions.position(latLng);
                 markerOptions.title("New Plant Location");
@@ -281,48 +331,47 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
                 }
 
 
+    }
+
+    public void showProgressDialog() {
+            if (mProgressDialog == null) {
+                mProgressDialog = new ProgressDialog(this);
+                mProgressDialog.setMessage(getString(R.string.loading));
+                mProgressDialog.setIndeterminate(true);
             }
-            public void showProgressDialog() {
-                if (mProgressDialog == null) {
-                    mProgressDialog = new ProgressDialog(this);
-                    mProgressDialog.setMessage(getString(R.string.loading));
-                    mProgressDialog.setIndeterminate(true);
-                }
 
                 mProgressDialog.show();
-            }
+    }
 
-            public void hideProgressDialog() {
-                if (mProgressDialog != null && mProgressDialog.isShowing()) {
-                    mProgressDialog.dismiss();
+    public void hideProgressDialog() {
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+             mProgressDialog.dismiss();
+        }
+    }
+
+    private void signOut() {
+        auth = FirebaseAuth.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
+        boolean user_signed_in_through_facebook = false;
+        if(user != null) {
+            for (UserInfo user_info : FirebaseAuth.getInstance().getCurrentUser().getProviderData()) {
+                if (user_info.getProviderId().equals("facebook.com")) {
+                    user_signed_in_through_facebook = true;
+                    break;
                 }
             }
+        }
+        if(user_signed_in_through_facebook && user!= null){
+            auth.signOut();
+            LoginManager.getInstance().logOut();
+        } else if(user!= null){
+            auth.signOut();
+            Toast.makeText(PlantMapActivity.this, "User Signed Out!", Toast.LENGTH_SHORT).show();
+        } else{
+            Toast.makeText(PlantMapActivity.this, "User Not Logged in !", Toast.LENGTH_SHORT).show();
+        }
 
-            private void signOut() {
-                auth = FirebaseAuth.getInstance();
-                FirebaseUser user = auth.getCurrentUser();
-                boolean user_signed_in_through_facebook = false;
-                if(user != null) {
-                    for (UserInfo user_info : FirebaseAuth.getInstance().getCurrentUser().getProviderData()) {
-                        if (user_info.getProviderId().equals("facebook.com")) {
-                            user_signed_in_through_facebook = true;
-                            break;
-                        }
-                    }
-                }
-                if(user_signed_in_through_facebook && user!= null){
-                    auth.signOut();
-                    LoginManager.getInstance().logOut();
-                }
-                else if(user!= null){
-                    auth.signOut();
-                    Toast.makeText(PlantMapActivity.this, "User Signed Out!", Toast.LENGTH_SHORT).show();
-                }
-                else{
-                    Toast.makeText(PlantMapActivity.this, "User Not Logged in !", Toast.LENGTH_SHORT).show();
-                }
-
-            }
+    }
 
 
 
@@ -350,24 +399,16 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
                 buildGoogleApiClient();
                 mMap.setMyLocationEnabled(true);
             }
+            else{
+                checkLocationPermission();
+            }
         }
         else {
             buildGoogleApiClient();
             mMap.setMyLocationEnabled(true);
         }
 
-        List<MarkerOptions> myMarkerOptionsList =  new ArrayList<MarkerOptions>();
-        List<Plant> plantList = API.getPlants(new LatLng(33, -84)); //using temporary latlong until I get my geolocation working
-        for(int i = 0; i < plantList.size(); i++) {
-            LatLng latlng = plantList.get(i).getLocation();
-            MarkerOptions markerOptions = new MarkerOptions();
-            markerOptions.position(latlng);
-            markerOptions.title(plantList.get(i).getPlantName());
-            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-            myMarkerOptionsList.add(markerOptions);
-        }
-
-        populateMarkersOnMap(mMap, myMarkerOptionsList);
+        populateMarkersOnMap(mMap, new LatLng(33, -84), 100);
         // Add a marker in Sydney and move the camera
         /*
         LatLng sydney = new LatLng(-34, 151);
@@ -390,13 +431,56 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
 
         });
         mMap.setOnMapLongClickListener(this);
+
     }
 
-    public void populateMarkersOnMap(GoogleMap googleMap, List<MarkerOptions> myMarkerOptionsList){
+    public void populateMarkersOnMap(GoogleMap googleMap, LatLng currLocation, int radius){
         mMap = googleMap;
-        for(MarkerOptions mo: myMarkerOptionsList){
-           mMap.addMarker(mo);
-        }
+        mGeoFire = new GeoFire(API.getDatabaseReference().child("plant_location"));
+        GeoQuery getPlants = mGeoFire.queryAtLocation(new GeoLocation(currLocation.latitude, currLocation.longitude), radius);
+        getPlants.addGeoQueryEventListener(new GeoQueryEventListener() {
+            @Override
+            public void onKeyEntered(String key, GeoLocation location) {
+                LatLng newLatLng = new LatLng(location.latitude, location.longitude);
+                Marker newMarker = mMap.addMarker(new MarkerOptions().position(newLatLng));
+                hashMarkers.put(key, newMarker);
+            }
+
+            @Override
+            public void onKeyExited(String key) {
+
+            }
+
+            @Override
+            public void onKeyMoved(String key, GeoLocation location) {
+
+            }
+
+            @Override
+            public void onGeoQueryReady() {
+
+            }
+
+            @Override
+            public void onGeoQueryError(DatabaseError error) {
+
+            }
+        });
+    }
+
+    public void getPlantInfo(String key) {
+        Query plantQuery = API.getDatabaseReference().child("plants").child(key).orderByValue();
+        plantQuery.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Plant getPlant = dataSnapshot.getValue(Plant.class);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     protected synchronized void buildGoogleApiClient(){
@@ -563,7 +647,32 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
                 return super.onOptionsItemSelected(item);
             }
 
+            public void animateFAB(){
 
+                if(isFabOpen){
+
+                    fab.startAnimation(rotate_backward);
+                    //fab1.startAnimation(fab_close);
+                    fab2.startAnimation(fab_close);
+                    //fab1.setClickable(false);
+                    fab2.setClickable(false);
+                    isFabOpen = false;
+                    image_marker_pin.setVisibility(View.GONE);
+
+
+                } else {
+                    Toast.makeText(this, "Set Pin at the new plant location", Toast.LENGTH_LONG).show();
+                    fab.startAnimation(rotate_forward);
+                    //fab1.startAnimation(fab_open);
+                    fab2.startAnimation(fab_open);
+                    //fab1.setClickable(true);
+                    fab2.setClickable(true);
+                    image_marker_pin.setVisibility(View.VISIBLE);
+                    isFabOpen = true;
+
+
+                }
+            }
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     public boolean checkLocationPermission(){
         if (ContextCompat.checkSelfPermission(this,
@@ -577,12 +686,25 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
                 // Show an explanation to the user *asynchronously* -- don't block
                 // this thread waiting for the user's response! After the user
                 // sees the explanation, try again to request the permission.
-
+                new AlertDialog.Builder(PlantMapActivity.this)
+                        .setMessage("To show the location the permission is needed")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                ActivityCompat.requestPermissions(PlantMapActivity.this,
+                                        new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                                        MY_PERMISSIONS_REQUEST_LOCATION);
+                            }
+                        })
+                        .setNegativeButton("Cancel", null)
+                        .create()
+                        .show();
                 //Prompt the user once explanation has been shown
+                /*
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         MY_PERMISSIONS_REQUEST_LOCATION);
-
+                */
 
             } else {
                 // No explanation needed, we can request the permission.

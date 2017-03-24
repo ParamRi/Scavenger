@@ -16,19 +16,21 @@ public class Plant {
     private boolean isEdible;
     private boolean isVerified;
     private LatLng location;
+    private String downloadUrlString;
 
     public Plant() {
 
     }
 
     public Plant(String plantName, String sciName, String description, boolean isEdible,
-                     boolean isVerified, LatLng location) {
+                     boolean isVerified, LatLng location, String downloadUrlString) {
         this.plantName = plantName;
         this.sciName = sciName;
         this.description = description;
         this.isEdible = isEdible;
         this.isVerified = isVerified;
         this.location = location;
+        this.downloadUrlString = downloadUrlString;
     }
 
     public void setPlantName(String plantName) {
@@ -55,6 +57,10 @@ public class Plant {
         this.location = location;
     }
 
+    public void setDownloadUrlString(String downloadUrlString) {
+        this.downloadUrlString = downloadUrlString;
+    }
+
     public String getPlantName() {
         return plantName;
     }
@@ -78,4 +84,6 @@ public class Plant {
     public LatLng getLocation() {
         return location;
     }
+
+    public String getDownloadUrlString() { return downloadUrlString; }
 }
