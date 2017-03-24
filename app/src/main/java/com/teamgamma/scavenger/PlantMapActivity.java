@@ -388,6 +388,33 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
             else{
                 checkLocationPermission();
             }
+
+            if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.INTERNET)
+                    == PackageManager.PERMISSION_GRANTED) {
+
+            }
+            else{
+                checkInternetPermission();
+            }
+
+            if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.CAMERA)
+                    == PackageManager.PERMISSION_GRANTED) {
+
+            }
+            else{
+                checkCameraPermission();
+            }
+
+            if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED) {
+
+            }
+            else{
+                checkWriteExternalStoragePermission();
+            }
         }
         else {
             buildGoogleApiClient();
@@ -630,7 +657,11 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
                 }
             }
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
-    public boolean checkLocationPermission(){
+    public static final int MY_PERMISSIONS_REQUEST_INTERNET = 200;
+    private static final int MY_PERMISSIONS_REQUEST_CAMERA = 1888;
+    private static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1889;
+
+            public boolean checkLocationPermission(){
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -674,7 +705,142 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
         }
     }
 
-    @Override
+            public boolean checkWriteExternalStoragePermission(){
+                if (ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) {
+
+                    // Asking user if explanation is needed
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+
+                        // Show an explanation to the user *asynchronously* -- don't block
+                        // this thread waiting for the user's response! After the user
+                        // sees the explanation, try again to request the permission.
+                        new AlertDialog.Builder(PlantMapActivity.this)
+                                .setMessage("To show the location the permission is needed")
+                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        ActivityCompat.requestPermissions(PlantMapActivity.this,
+                                                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                                MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+                                    }
+                                })
+                                .setNegativeButton("Cancel", null)
+                                .create()
+                                .show();
+                        //Prompt the user once explanation has been shown
+                /*
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_LOCATION);
+                */
+
+                    } else {
+                        // No explanation needed, we can request the permission.
+                        ActivityCompat.requestPermissions(this,
+                                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+                    }
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+
+     public boolean checkInternetPermission(){
+            if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.INTERNET)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+                // Asking user if explanation is needed
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                        Manifest.permission.INTERNET)) {
+
+                    // Show an explanation to the user *asynchronously* -- don't block
+                    // this thread waiting for the user's response! After the user
+                    // sees the explanation, try again to request the permission.
+                    new AlertDialog.Builder(PlantMapActivity.this)
+                            .setMessage("To Download and Upload plant data, INTERNET is needed")
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                    ActivityCompat.requestPermissions(PlantMapActivity.this,
+                                            new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                                            MY_PERMISSIONS_REQUEST_LOCATION);
+                            }
+                                })
+                            .setNegativeButton("Cancel", null)
+                            .create()
+                            .show();
+                    //Prompt the user once explanation has been shown
+            /*
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    MY_PERMISSIONS_REQUEST_LOCATION);
+            */
+
+            } else {
+                    // No explanation needed, we can request the permission.
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{Manifest.permission.INTERNET},
+                            MY_PERMISSIONS_REQUEST_INTERNET);
+                }
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+            public boolean checkCameraPermission(){
+                if (ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.CAMERA)
+                        != PackageManager.PERMISSION_GRANTED) {
+
+                    // Asking user if explanation is needed
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                            Manifest.permission.CAMERA)) {
+
+                        // Show an explanation to the user *asynchronously* -- don't block
+                        // this thread waiting for the user's response! After the user
+                        // sees the explanation, try again to request the permission.
+                        new AlertDialog.Builder(PlantMapActivity.this)
+                                .setMessage("To Upload Plant pics, you need Camera")
+                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        ActivityCompat.requestPermissions(PlantMapActivity.this,
+                                                new String[]{Manifest.permission.CAMERA},
+                                                MY_PERMISSIONS_REQUEST_CAMERA);
+                                    }
+                                })
+                                .setNegativeButton("Cancel", null)
+                                .create()
+                                .show();
+                        //Prompt the user once explanation has been shown
+            /*
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    MY_PERMISSIONS_REQUEST_LOCATION);
+            */
+
+                    } else {
+                        // No explanation needed, we can request the permission.
+                        ActivityCompat.requestPermissions(this,
+                                new String[]{Manifest.permission.CAMERA},
+                                MY_PERMISSIONS_REQUEST_CAMERA);
+                    }
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+
+
+
+
+            @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String permissions[], @NonNull int[] grantResults) {
         switch (requestCode) {
@@ -703,9 +869,91 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
 
             }
 
+            case MY_PERMISSIONS_REQUEST_INTERNET: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted. Do the
+                    // contacts-related task you need to do.
+                    if (ContextCompat.checkSelfPermission(this,
+                            Manifest.permission.INTERNET)
+                            == PackageManager.PERMISSION_GRANTED) {
+
+                        if (mGoogleApiClient == null) {
+                            buildGoogleApiClient();
+                        }
+                        mMap.setMyLocationEnabled(true);
+                    }
+
+                } else {
+
+                    // Permission denied, Disable the functionality that depends on this permission.
+                    Toast.makeText(this, "permission denied", Toast.LENGTH_LONG).show();
+                }
+
+            }
+
+
+
+            case MY_PERMISSIONS_REQUEST_CAMERA: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted. Do the
+                    // contacts-related task you need to do.
+                    if (ContextCompat.checkSelfPermission(this,
+                            Manifest.permission.CAMERA)
+                            == PackageManager.PERMISSION_GRANTED) {
+
+                        if (mGoogleApiClient == null) {
+                            buildGoogleApiClient();
+                        }
+                        mMap.setMyLocationEnabled(true);
+                    }
+
+                } else {
+
+                    // Permission denied, Disable the functionality that depends on this permission.
+                    Toast.makeText(this, "permission denied", Toast.LENGTH_LONG).show();
+                }
+
+            }
+
+            case MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted. Do the
+                    // contacts-related task you need to do.
+                    if (ContextCompat.checkSelfPermission(this,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                            == PackageManager.PERMISSION_GRANTED) {
+
+                        if (mGoogleApiClient == null) {
+                            buildGoogleApiClient();
+                        }
+                        mMap.setMyLocationEnabled(true);
+                    }
+
+                } else {
+
+                    // Permission denied, Disable the functionality that depends on this permission.
+                    Toast.makeText(this, "permission denied", Toast.LENGTH_LONG).show();
+                }
+
+            }
+
+            // other 'case' lines to check for other permissions this app might request.
+            // You can add here other case statements according to your requirement.
+        }
+
+
             // other 'case' lines to check for other permissions this app might request.
             // You can add here other case statements according to your requirement.
         }
     }
 
-}
+
