@@ -408,7 +408,12 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
             mMap.setMyLocationEnabled(true);
         }
 
-        populateMarkersOnMap(mMap, new LatLng(33, -84), 100);
+        if(mLastLocation != null) {
+            populateMarkersOnMap(mMap, new LatLng(mLastLocation.getLatitude(),
+                    mLastLocation.getLongitude()), 100);
+        } else {
+            populateMarkersOnMap(mMap, new LatLng(33, -83), 500);
+        }
         // Add a marker in Sydney and move the camera
         /*
         LatLng sydney = new LatLng(-34, 151);
@@ -444,6 +449,20 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
                 LatLng newLatLng = new LatLng(location.latitude, location.longitude);
                 Marker newMarker = mMap.addMarker(new MarkerOptions().position(newLatLng));
                 hashMarkers.put(key, newMarker);
+
+                Query plantQuery = API.getDatabaseReference().child("plants").child(key).orderByValue();
+                plantQuery.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Plant getPlant = dataSnapshot.getValue(Plant.class);
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
             }
 
             @Override
@@ -468,21 +487,6 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
         });
     }
 
-    public void getPlantInfo(String key) {
-        Query plantQuery = API.getDatabaseReference().child("plants").child(key).orderByValue();
-        plantQuery.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Plant getPlant = dataSnapshot.getValue(Plant.class);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-
     protected synchronized void buildGoogleApiClient(){
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -501,8 +505,6 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
 
     @Override
     public void onConnected(Bundle connectionHint) {
-
-
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(1000);
         mLocationRequest.setFastestInterval(1000);
