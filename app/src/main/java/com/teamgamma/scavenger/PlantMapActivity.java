@@ -74,6 +74,7 @@ import com.teamgamma.scavenger.plant.AddPlantActivity;
 import com.teamgamma.scavenger.plant.Plant;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -110,6 +111,7 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
     private FirebaseAuth auth;
     private GeoFire mGeoFire;
     private Map<String, Marker> hashMarkers;
+    private List<Plant> plantList;
 
     private FragmentManager mFragmentManager;
     private FragmentTransaction mFragmentTransaction;
@@ -137,6 +139,7 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
 
         //set up hashMap of Markers
         hashMarkers = new HashMap<String, Marker>();
+        plantList = new ArrayList<Plant>();
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -455,7 +458,7 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         Plant getPlant = dataSnapshot.getValue(Plant.class);
-
+                        plantList.add(getPlant);
                     }
 
                     @Override
@@ -561,6 +564,9 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
                                   Toast.makeText(PlantMapActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
                                   break;
                               case 1:
+                                  Intent i = new Intent(PlantMapActivity.this, PlantListActivity.class);
+                                  Bundle b = new Bundle();
+                                  b.putParcelable();
                                   startActivity(new Intent(PlantMapActivity.this, PlantListActivity.class));
                                   break;
                               case 2: //Third item
@@ -585,9 +591,9 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
                           }
                     }
                 });
-  }
+    }
 
-            private void setupDrawer() {
+    private void setupDrawer() {
                 mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
 
                     /** Called when a drawer has settled in a completely open state. */
@@ -609,28 +615,28 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
                 mDrawerLayout.addDrawerListener(mDrawerToggle);
             }
 
-            @Override
-            protected void onPostCreate(Bundle savedInstanceState) {
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
                 super.onPostCreate(savedInstanceState);
                 // Sync the toggle state after onRestoreInstanceState has occurred.
                 mDrawerToggle.syncState();
             }
 
-            @Override
-            public void onConfigurationChanged(Configuration newConfig) {
-                super.onConfigurationChanged(newConfig);
-                mDrawerToggle.onConfigurationChanged(newConfig);
-            }
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
 
-            @Override
-            public boolean onCreateOptionsMenu(Menu menu) {
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
                 // Inflate the menu; this adds items to the action bar if it is present.
                 getMenuInflater().inflate(R.menu.menu_main, menu);
                 return true;
             }
 
-            @Override
-            public boolean onOptionsItemSelected(MenuItem item) {
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
                 // Handle action bar item clicks here. The action bar will
                 // automatically handle clicks on the Home/Up button, so long
                 // as you specify a parent activity in AndroidManifest.xml.
