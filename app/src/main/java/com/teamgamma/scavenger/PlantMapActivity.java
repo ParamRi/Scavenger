@@ -12,6 +12,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -139,7 +140,7 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
 
         //set up hashMap of Markers
         hashMarkers = new HashMap<String, Marker>();
-        plantList = new ArrayList<Plant>();
+        plantList = new ArrayList<>();
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -475,7 +476,7 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
         GeoQuery getPlants = mGeoFire.queryAtLocation(new GeoLocation(currLocation.latitude, currLocation.longitude), radius);
         getPlants.addGeoQueryEventListener(new GeoQueryEventListener() {
             @Override
-            public void onKeyEntered(String key, GeoLocation location) {
+            public void onKeyEntered(String key, final GeoLocation location) {
                 LatLng newLatLng = new LatLng(location.latitude, location.longitude);
                 Marker newMarker = mMap.addMarker(new MarkerOptions().position(newLatLng));
                 hashMarkers.put(key, newMarker);
@@ -485,6 +486,8 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         Plant getPlant = dataSnapshot.getValue(Plant.class);
+                        getPlant.setLatitude(location.latitude);
+                        getPlant.setLongitude(location.longitude);
                         plantList.add(getPlant);
                     }
 
@@ -591,7 +594,9 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
                                   Toast.makeText(PlantMapActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
                                   break;
                               case 1:
-                                  startActivity(new Intent(PlantMapActivity.this, PlantListActivity.class));
+                                  Intent i = new Intent(PlantMapActivity.this, PlantListActivity.class);
+                                  i.putParcelableArrayListExtra("PlantList", (ArrayList<? extends Parcelable>) plantList);
+                                  startActivity(i);
                                   break;
                               case 2: //Third item
                                   startActivity(new Intent(PlantMapActivity.this, LoginActivity.class));
