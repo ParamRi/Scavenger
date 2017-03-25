@@ -225,7 +225,7 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
     public void addPlant(View view) {
         createPlant = new Plant(plantNameText.getText().toString(), plantSciNameText.getText().toString(),
                 plantDescText.getText().toString(),
-                edibilityCheckBox.isChecked(), false, new LatLng(latitude, longitude), downloadUrlString);
+                edibilityCheckBox.isChecked(), false, latitude, longitude, downloadUrlString);
         String plantId = API.getDatabaseReference().child("plants").push().getKey();
         API.getDatabaseReference().child("plants").child(plantId).setValue(createPlant);
         API.getGeoFire().setLocation(plantId, new GeoLocation(latitude, longitude));
