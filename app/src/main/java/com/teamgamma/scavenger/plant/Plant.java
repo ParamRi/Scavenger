@@ -1,14 +1,7 @@
 package com.teamgamma.scavenger.plant;
 
-import android.net.Uri;
-
-import com.google.android.gms.maps.model.LatLng;
-
 /**
- * Helper class for providing sample content for user interfaces created by
- * Android template wizards.
- * <p>
- * TODO: Replace all uses of this class before publishing your app.
+ * Plant Object containing all plant information
  */
 public class Plant {
 
@@ -20,7 +13,9 @@ public class Plant {
     private LatLng location;
     private String downloadUrlString;
 
-    public Plant() {
+    public Plant() {}
+
+    public Plant(String plantName, String sciName, String description, boolean checked, boolean isVerified, com.google.android.gms.maps.model.LatLng latLng, String downloadUrlString) {
 
     }
 
@@ -88,4 +83,5 @@ public class Plant {
     }
 
     public String getDownloadUrlString() { return downloadUrlString; }
+
 }

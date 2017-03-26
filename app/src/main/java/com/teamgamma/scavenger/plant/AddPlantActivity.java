@@ -1,13 +1,15 @@
 package com.teamgamma.scavenger.plant;
 
-import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
@@ -15,11 +17,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,16 +28,13 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
-
-import android.location.LocationListener;
 import android.widget.TextView;
 import android.widget.Toast;
-//import com.google.android.gms.location.LocationListener;
+
+import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
@@ -328,6 +324,7 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
                     Picasso.with(AddPlantActivity.this).load(downloadUrl_temp).fit().centerCrop().into(uploadImageView);
 
 
+
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -336,7 +333,13 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
                 }
             });
         }
+<<<<<<< HEAD
 */
+
+
+
+
+
 
 
     /**
@@ -346,7 +349,10 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
         createPlant = new Plant(plantNameText.getText().toString(), plantSciNameText.getText().toString(),
                 plantDescText.getText().toString(),
                 edibilityCheckBox.isChecked(), false, new LatLng(latitude, longitude), downloadUrlString);
-        API.getDatabseReference().child("plants").push().setValue(createPlant);
+        String plantId = API.getDatabaseReference().child("plants").push().getKey();
+        API.getDatabaseReference().child("plants").child(plantId).setValue(createPlant);
+        API.getGeoFire().setLocation(plantId, new GeoLocation(latitude, longitude));
+        System.out.println("added plant");
         //DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
         //mDatabase.child("plants_with_image").push().setValue(createPlant);
         //System.out.println("added plant");

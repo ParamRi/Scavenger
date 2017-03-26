@@ -34,6 +34,7 @@ dependencies {
     compile 'com.android.support:design:25.2.0'
     compile 'com.facebook.android:facebook-android-sdk:4.16.1'
     compile 'com.android.support.constraint:constraint-layout:+'
+    compile 'com.firebase:geofire-android:2.1.1'
     compile 'com.squareup.picasso:picasso:2.5.2'
     testCompile 'junit:junit:4.12'
 
