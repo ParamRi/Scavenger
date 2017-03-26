@@ -10,7 +10,7 @@ public class Plant implements Parcelable{
 
     private String plantName;
     private String sciName;
-    private String description;
+    private String desc;
     private boolean isEdible;
     private boolean isVerified;
     private Double latitude;
@@ -20,20 +20,14 @@ public class Plant implements Parcelable{
     public Plant() {
         plantName = "";
         sciName = "";
-        description = "";
-    }
-
-    public Plant(String plantName, String sciName, String description, boolean checked,
-                 boolean isVerified, com.google.android.gms.maps.model.LatLng latLng,
-                 String downloadUrlString) {
-
+        desc = "";
     }
 
     public Plant(String plantName, String sciName, String description, boolean isEdible,
                      boolean isVerified, double latitude, double longitude, String downloadUrlString) {
         this.plantName = plantName;
         this.sciName = sciName;
-        this.description = description;
+        this.desc = description;
         this.isEdible = isEdible;
         this.isVerified = isVerified;
         this.latitude = latitude;
@@ -50,7 +44,7 @@ public class Plant implements Parcelable{
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        this.desc = description;
     }
 
     public void setEdibility(boolean isEdible){
@@ -82,7 +76,7 @@ public class Plant implements Parcelable{
     }
 
     public String getDescription() {
-        return description;
+        return desc;
     }
 
     public boolean isEdible(){
@@ -106,7 +100,7 @@ public class Plant implements Parcelable{
     public Plant(Parcel in) {
         plantName = in.readString();
         sciName = in.readString();
-        description = in.readString();
+        desc = in.readString();
         isEdible = ( in.readInt() == 1 );
         isVerified = (in.readInt() == 1);
         latitude = in.readDouble();
@@ -123,7 +117,7 @@ public class Plant implements Parcelable{
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(plantName);
         parcel.writeString(sciName);
-        parcel.writeString(description);
+        parcel.writeString(desc);
         parcel.writeInt((isEdible) ? 1 : 0);
         parcel.writeInt((isVerified) ? 1 : 0);
         parcel.writeDouble(latitude);

@@ -111,7 +111,7 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
     private FirebaseAuth.AuthStateListener authListener;
     private FirebaseAuth auth;
     private GeoFire mGeoFire;
-    private Map<String, Marker> hashMarkers;
+    private Map<Marker, String> hashMarkers;
     private List<Plant> plantList;
 
     private FragmentManager mFragmentManager;
@@ -139,7 +139,7 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
         setupDrawer();
 
         //set up hashMap of Markers
-        hashMarkers = new HashMap<String, Marker>();
+        hashMarkers = new HashMap<Marker,String>();
         plantList = new ArrayList<>();
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -289,15 +289,8 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 image_marker_pin.setVisibility(View.VISIBLE);
                 animateFAB();
-                /*image_marker_pin.setVisibility(View.VISIBLE);
-                fab2.show();
-                fab.hide();
-                */
-                //startActivity(new Intent(PlantMapActivity.this, AddPlantActivity.class));
-
             }
         });
 
@@ -313,8 +306,6 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
                 i.putExtra("LatLng",camLocation);
                 startActivity(i);
                 animateFAB();
-                //fab.show();
-                //fab2.hide();
             }
         });
     }
@@ -376,9 +367,6 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
         }
 
     }
-
-
-
 
     /**
      * Manipulates the map once available.
@@ -456,20 +444,40 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
 
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener()
         {
-
             @Override
             public boolean onMarkerClick(Marker arg0) {
-                //if(arg0.getTitle().equals("MyHome")) // if marker source is clicked
-                    Toast.makeText(PlantMapActivity.this, arg0.getTitle(), Toast.LENGTH_SHORT).show();// display toast
-                startActivity(new Intent(PlantMapActivity.this, PlantDescriptionActivity.class));
+                final Intent i = new Intent(PlantMapActivity.this, PlantDescriptionActivity.class);
+                String key = hashMarkers.get(arg0);
+                Query plantQuery = API.getDatabaseReference().child("plants").child(key).orderByValue();
+                plantQuery.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Plant getPlant = dataSnapshot.getValue(Plant.class);
+                        i.putExtra("Plant Info", getPlant);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+                Toast.makeText(PlantMapActivity.this, arg0.getTitle(), Toast.LENGTH_SHORT).show();// display toast
+                startActivity(i);
                 return false;
             }
 
         });
         mMap.setOnMapLongClickListener(this);
-
     }
 
+    /**
+     * Connects to Firebase and retrieves a list of plant locations around the user's location
+     * within a given radius and places these locations on the map.
+     * @param googleMap the map that displays the markers.
+     * @param currLocation of the user.
+     * @param radius limits the range from which a GeoQuery will retrieve plant locations
+     */
     public void populateMarkersOnMap(GoogleMap googleMap, LatLng currLocation, int radius){
         mMap = googleMap;
         mGeoFire = new GeoFire(API.getDatabaseReference().child("plant_location"));
@@ -478,8 +486,9 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
             @Override
             public void onKeyEntered(String key, final GeoLocation location) {
                 LatLng newLatLng = new LatLng(location.latitude, location.longitude);
-                Marker newMarker = mMap.addMarker(new MarkerOptions().position(newLatLng));
-                hashMarkers.put(key, newMarker);
+                MarkerOptions mOps = new MarkerOptions().position(newLatLng);
+                Marker newMarker = mMap.addMarker(mOps);
+                hashMarkers.put(newMarker, key);
 
                 Query plantQuery = API.getDatabaseReference().child("plants").child(key).orderByValue();
                 plantQuery.addValueEventListener(new ValueEventListener() {
@@ -520,8 +529,10 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
         });
     }
 
+    /**
+     *
+     */
     protected synchronized void buildGoogleApiClient(){
-
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -532,7 +543,6 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
 
 
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
 
     }
 
@@ -587,69 +597,61 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
         mDrawerList.setAdapter(mAdapter);
 
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                          switch (position) {
-                              case 0:
-                                  Toast.makeText(PlantMapActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
-                                  break;
-                              case 1:
-                                  Intent i = new Intent(PlantMapActivity.this, PlantListActivity.class);
-                                  i.putParcelableArrayListExtra("PlantList", (ArrayList<? extends Parcelable>) plantList);
-                                  startActivity(i);
-                                  break;
-                              case 2: //Third item
-                                  startActivity(new Intent(PlantMapActivity.this, LoginActivity.class));
-                                           //finish();
-
-                                  break;
-                              case 3: //Fourth item
-
-                                 startActivity(new Intent(PlantMapActivity.this, SignupActivity.class));
-                                  break;
-
-                                  //Toast.makeText(PlantMapActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
-                              case 4:
-                                  signOut();
-                                  break;
-
-                              case 5:
-                                  startActivity(new Intent(PlantMapActivity.this, ManageAccountActivity.class));
-                                  break;
-
-                          }
-                    }
-                });
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (position) {
+                    case 0:
+                        Toast.makeText(PlantMapActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
+                        break;
+                    case 1:
+                        Intent i = new Intent(PlantMapActivity.this, PlantListActivity.class);
+                        i.putParcelableArrayListExtra("PlantList", (ArrayList<? extends Parcelable>) plantList);
+                        startActivity(i);
+                        break;
+                    case 2: //Third item
+                        startActivity(new Intent(PlantMapActivity.this, LoginActivity.class));
+                        //finish();
+                        break;
+                    case 3: //Fourth item
+                        startActivity(new Intent(PlantMapActivity.this, SignupActivity.class));
+                        break;
+                    //Toast.makeText(PlantMapActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
+                    case 4:
+                        signOut();
+                        break;
+                    case 5:
+                        startActivity(new Intent(PlantMapActivity.this, ManageAccountActivity.class));
+                        break;
+                }
+            }
+        });
     }
 
     private void setupDrawer() {
-                mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
-
-                    /** Called when a drawer has settled in a completely open state. */
-                    public void onDrawerOpened(View drawerView) {
-                        super.onDrawerOpened(drawerView);
-                        getSupportActionBar().setTitle("Menu");
-                        invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-                    }
-
-                    /** Called when a drawer has settled in a completely closed state. */
-                    public void onDrawerClosed(View view) {
-                        super.onDrawerClosed(view);
-                        getSupportActionBar().setTitle("Map");
-                        invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-                    }
-                };
-
-                mDrawerToggle.setDrawerIndicatorEnabled(true);
-                mDrawerLayout.addDrawerListener(mDrawerToggle);
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
+            /** Called when a drawer has settled in a completely open state. */
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                getSupportActionBar().setTitle("Menu");
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
+            /** Called when a drawer has settled in a completely closed state. */
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                getSupportActionBar().setTitle("Map");
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+        };
+        mDrawerToggle.setDrawerIndicatorEnabled(true);
+        mDrawerLayout.addDrawerListener(mDrawerToggle);
+    }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
-                super.onPostCreate(savedInstanceState);
-                // Sync the toggle state after onRestoreInstanceState has occurred.
-                mDrawerToggle.syncState();
-            }
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        mDrawerToggle.syncState();
+    }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -666,60 +668,51 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-                // Handle action bar item clicks here. The action bar will
-                // automatically handle clicks on the Home/Up button, so long
-                // as you specify a parent activity in AndroidManifest.xml.
-                int id = item.getItemId();
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+         //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+         // Activate the navigation drawer toggle
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
-                //noinspection SimplifiableIfStatement
-                if (id == R.id.action_settings) {
-                    return true;
-                }
+    public void animateFAB(){
 
-                // Activate the navigation drawer toggle
-                if (mDrawerToggle.onOptionsItemSelected(item)) {
-                    return true;
-                }
+        if(isFabOpen){
+             fab.startAnimation(rotate_backward);
+            //fab1.startAnimation(fab_close);
+            fab2.startAnimation(fab_close);
+            //fab1.setClickable(false);
+            fab2.setClickable(false);
+            isFabOpen = false;
+            image_marker_pin.setVisibility(View.GONE);
+        } else {
+            Toast.makeText(this, "Set Pin at the new plant location", Toast.LENGTH_LONG).show();
+            fab.startAnimation(rotate_forward);
+            //fab1.startAnimation(fab_open);
+            fab2.startAnimation(fab_open);
+            //fab1.setClickable(true);
+            fab2.setClickable(true);
+            image_marker_pin.setVisibility(View.VISIBLE);
+            isFabOpen = true;
+        }
+    }
 
-                return super.onOptionsItemSelected(item);
-            }
-
-            public void animateFAB(){
-
-                if(isFabOpen){
-
-                    fab.startAnimation(rotate_backward);
-                    //fab1.startAnimation(fab_close);
-                    fab2.startAnimation(fab_close);
-                    //fab1.setClickable(false);
-                    fab2.setClickable(false);
-                    isFabOpen = false;
-                    image_marker_pin.setVisibility(View.GONE);
-
-
-                } else {
-                    Toast.makeText(this, "Set Pin at the new plant location", Toast.LENGTH_LONG).show();
-                    fab.startAnimation(rotate_forward);
-                    //fab1.startAnimation(fab_open);
-                    fab2.startAnimation(fab_open);
-                    //fab1.setClickable(true);
-                    fab2.setClickable(true);
-                    image_marker_pin.setVisibility(View.VISIBLE);
-                    isFabOpen = true;
-
-
-                }
-            }
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     public static final int MY_PERMISSIONS_REQUEST_INTERNET = 200;
     private static final int MY_PERMISSIONS_REQUEST_CAMERA = 1888;
     private static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1889;
 
-            public boolean checkLocationPermission(){
+    public boolean checkLocationPermission(){
         if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // Asking user if explanation is needed
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
@@ -759,142 +752,133 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
         }
     }
 
-            public boolean checkWriteExternalStoragePermission(){
-                if (ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        != PackageManager.PERMISSION_GRANTED) {
-
-                    // Asking user if explanation is needed
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-
-                        // Show an explanation to the user *asynchronously* -- don't block
-                        // this thread waiting for the user's response! After the user
-                        // sees the explanation, try again to request the permission.
-                        new AlertDialog.Builder(PlantMapActivity.this)
-                                .setMessage("To show the location the permission is needed")
-                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        ActivityCompat.requestPermissions(PlantMapActivity.this,
-                                                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                                MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
-                                    }
-                                })
-                                .setNegativeButton("Cancel", null)
-                                .create()
-                                .show();
-                        //Prompt the user once explanation has been shown
+    public boolean checkWriteExternalStoragePermission(){
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Asking user if explanation is needed
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                 // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+                new AlertDialog.Builder(PlantMapActivity.this)
+                        .setMessage("To show the location the permission is needed")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                ActivityCompat.requestPermissions(PlantMapActivity.this,
+                                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                        MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+                            }
+                        })
+                        .setNegativeButton("Cancel", null)
+                        .create()
+                        .show();
+                //Prompt the user once explanation has been shown
                 /*
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         MY_PERMISSIONS_REQUEST_LOCATION);
                 */
 
-                    } else {
-                        // No explanation needed, we can request the permission.
-                        ActivityCompat.requestPermissions(this,
-                                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
-                    }
-                    return false;
-                } else {
-                    return true;
-                }
-            }
-
-     public boolean checkInternetPermission(){
-            if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.INTERNET)
-                    != PackageManager.PERMISSION_GRANTED) {
-
-                // Asking user if explanation is needed
-                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                        Manifest.permission.INTERNET)) {
-
-                    // Show an explanation to the user *asynchronously* -- don't block
-                    // this thread waiting for the user's response! After the user
-                    // sees the explanation, try again to request the permission.
-                    new AlertDialog.Builder(PlantMapActivity.this)
-                            .setMessage("To Download and Upload plant data, INTERNET is needed")
-                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                    ActivityCompat.requestPermissions(PlantMapActivity.this,
-                                            new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                                            MY_PERMISSIONS_REQUEST_LOCATION);
-                            }
-                                })
-                            .setNegativeButton("Cancel", null)
-                            .create()
-                            .show();
-                    //Prompt the user once explanation has been shown
-            /*
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    MY_PERMISSIONS_REQUEST_LOCATION);
-            */
-
             } else {
-                    // No explanation needed, we can request the permission.
-                    ActivityCompat.requestPermissions(this,
-                            new String[]{Manifest.permission.INTERNET},
-                            MY_PERMISSIONS_REQUEST_INTERNET);
-                }
-                return false;
-            } else {
-                return true;
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
             }
+            return false;
+        } else {
+            return true;
         }
+    }
 
-            public boolean checkCameraPermission(){
-                if (ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.CAMERA)
-                        != PackageManager.PERMISSION_GRANTED) {
+    public boolean checkInternetPermission(){
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED) {
 
-                    // Asking user if explanation is needed
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                            Manifest.permission.CAMERA)) {
+            // Asking user if explanation is needed
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.INTERNET)) {
 
-                        // Show an explanation to the user *asynchronously* -- don't block
-                        // this thread waiting for the user's response! After the user
-                        // sees the explanation, try again to request the permission.
-                        new AlertDialog.Builder(PlantMapActivity.this)
-                                .setMessage("To Upload Plant pics, you need Camera")
-                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        ActivityCompat.requestPermissions(PlantMapActivity.this,
-                                                new String[]{Manifest.permission.CAMERA},
-                                                MY_PERMISSIONS_REQUEST_CAMERA);
-                                    }
-                                })
-                                .setNegativeButton("Cancel", null)
-                                .create()
-                                .show();
-                        //Prompt the user once explanation has been shown
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+                new AlertDialog.Builder(PlantMapActivity.this)
+                        .setMessage("To Download and Upload plant data, INTERNET is needed")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                ActivityCompat.requestPermissions(PlantMapActivity.this,
+                                        new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                                        MY_PERMISSIONS_REQUEST_LOCATION);
+                            }
+                        })
+                        .setNegativeButton("Cancel", null)
+                        .create()
+                        .show();
+                //Prompt the user once explanation has been shown
+            /*
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    MY_PERMISSIONS_REQUEST_LOCATION);
+            */
+            } else {
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.INTERNET},
+                        MY_PERMISSIONS_REQUEST_INTERNET);
+            }
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+     public boolean checkCameraPermission(){
+         if (ContextCompat.checkSelfPermission(this,
+                 Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+
+             // Asking user if explanation is needed
+             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                     Manifest.permission.CAMERA)) {
+                 // Show an explanation to the user *asynchronously* -- don't block
+                 // this thread waiting for the user's response! After the user
+                 // sees the explanation, try again to request the permission.
+                 new AlertDialog.Builder(PlantMapActivity.this)
+                         .setMessage("To Upload Plant pics, you need Camera")
+                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                             @Override
+                             public void onClick(DialogInterface dialog, int which) {
+                                 ActivityCompat.requestPermissions(PlantMapActivity.this,
+                                         new String[]{Manifest.permission.CAMERA},
+                                         MY_PERMISSIONS_REQUEST_CAMERA);
+                             }
+                         })
+                         .setNegativeButton("Cancel", null)
+                         .create()
+                         .show();
+                 //Prompt the user once explanation has been shown
             /*
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     MY_PERMISSIONS_REQUEST_LOCATION);
             */
 
-                    } else {
-                        // No explanation needed, we can request the permission.
-                        ActivityCompat.requestPermissions(this,
-                                new String[]{Manifest.permission.CAMERA},
-                                MY_PERMISSIONS_REQUEST_CAMERA);
-                    }
-                    return false;
-                } else {
-                    return true;
-                }
-            }
+             } else {
+                 // No explanation needed, we can request the permission.
+                 ActivityCompat.requestPermissions(this,
+                         new String[]{Manifest.permission.CAMERA},
+                         MY_PERMISSIONS_REQUEST_CAMERA);
+             }
+             return false;
+         } else {
+             return true;
+         }
+     }
 
-
-
-
-            @Override
+    @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String permissions[], @NonNull int[] grantResults) {
         switch (requestCode) {
@@ -948,8 +932,6 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
 
             }
 
-
-
             case MY_PERMISSIONS_REQUEST_CAMERA: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
@@ -997,17 +979,13 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
                     // Permission denied, Disable the functionality that depends on this permission.
                     Toast.makeText(this, "permission denied", Toast.LENGTH_LONG).show();
                 }
-
             }
-
             // other 'case' lines to check for other permissions this app might request.
             // You can add here other case statements according to your requirement.
         }
-
-
             // other 'case' lines to check for other permissions this app might request.
             // You can add here other case statements according to your requirement.
-        }
     }
+}
 
 
