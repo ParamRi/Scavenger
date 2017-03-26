@@ -3,6 +3,11 @@ package com.teamgamma.scavenger.plant;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -64,6 +69,7 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
     private ProgressDialog mProgress;
     private ImageView uploadImageView;
     private String downloadUrlString;
+    private Uri photoURI;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -162,13 +168,13 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
         addImageButton.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View view) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     dispatchTakePictureIntent();
-                }
-                    else{
-                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    startActivityForResult(intent, CAMERA_REQUEST_CODE);
-                    }
+                //}
+                   //else{
+                    //Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    //startActivityForResult(intent, CAMERA_REQUEST_CODE);
+                   //}
 
 
 
@@ -179,16 +185,126 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
     }
 
 
+/*
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==CAMERA_REQUEST_CODE && resultCode==RESULT_OK){
+
+// Describe the columns you'd like to have returned. Selecting from the Thumbnails location gives you both the Thumbnail Image ID, as well as the original image ID
+            String[] projection = {
+                    MediaStore.Images.Thumbnails._ID,  // The columns we want
+                    MediaStore.Images.Thumbnails.IMAGE_ID,
+                    MediaStore.Images.Thumbnails.KIND,
+                    MediaStore.Images.Thumbnails.DATA};
+            String selection = MediaStore.Images.Thumbnails.KIND + "="  + // Select only mini's
+                    MediaStore.Images.Thumbnails.MINI_KIND;
+
+            String sort = MediaStore.Images.Thumbnails._ID + " DESC";
+
+//At the moment, this is a bit of a hack, as I'm returning ALL images, and just taking the latest one. There is a better way to narrow this down I think with a WHERE clause which is currently the selection variable
+            Cursor myCursor = getContentResolver().query(MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI, projection, selection, null, sort);
+
+            long imageId = 0l;
+            long thumbnailImageId = 0l;
+            String thumbnailPath = "";
+
+            try{
+                myCursor.moveToFirst();
+                imageId = myCursor.getLong(myCursor.getColumnIndexOrThrow(MediaStore.Images.Thumbnails.IMAGE_ID));
+                thumbnailImageId = myCursor.getLong(myCursor.getColumnIndexOrThrow(MediaStore.Images.Thumbnails._ID));
+                thumbnailPath = myCursor.getString(myCursor.getColumnIndexOrThrow(MediaStore.Images.Thumbnails.DATA));
+            }
+            finally{myCursor.close();}
+
+            //Create new Cursor to obtain the file Path for the large image
+
+            String[] largeFileProjection = {
+                    MediaStore.Images.ImageColumns._ID,
+                    MediaStore.Images.ImageColumns.DATA
+            };
+
+            String largeFileSort = MediaStore.Images.ImageColumns._ID + " DESC";
+            myCursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, largeFileProjection, null, null, largeFileSort);
+            String largeImagePath = "";
+
+            try{
+                myCursor.moveToFirst();
+
+//This will actually give yo uthe file path location of the image.
+                largeImagePath = myCursor.getString(myCursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATA));
+            }
+            finally{myCursor.close();}
+            // These are the two URI's you'll be interested in. They give you a handle to the actual images
+            Uri uri = Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, String.valueOf(imageId));
+            Uri uriThumbnailImage = Uri.withAppendedPath(MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI, String.valueOf(thumbnailImageId));
+
+// I've left out the remaining code, as all I do is assign the URI's to my own objects anyways...
+
+            StorageReference filepath = API.getStorageReference().child("Photos").child(uri.getLastPathSegment());
+            filepath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    mProgress.dismiss();
+
+                    Toast.makeText(AddPlantActivity.this, "Upload Successful!", Toast.LENGTH_SHORT).show();
+
+                    @SuppressWarnings("VisibleForTests") Uri downloadUrl_temp = taskSnapshot.getDownloadUrl();
+                    downloadUrlString = downloadUrl_temp.toString();
+                    Picasso.with(AddPlantActivity.this).load(downloadUrl_temp).fit().centerCrop().into(uploadImageView);
+
+
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(AddPlantActivity.this, "Upload Failed!", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
+
+*/
+
+
+
+    @Override
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK) {
+            mProgress.setMessage("Uploading...");
+            mProgress.show();
+            //Uri uri = data.getData();
+            galleryAddPic();
+            StorageReference filepath = API.getStorageReference().child("Photos").child(photoURI.getLastPathSegment());
+            filepath.putFile(photoURI).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    Toast.makeText(AddPlantActivity.this, "Upload Successful!", Toast.LENGTH_SHORT).show();
+                    mProgress.dismiss();
+                    @SuppressWarnings("VisibleForTests") Uri downloadUrl_temp = taskSnapshot.getDownloadUrl();
+                    downloadUrlString = downloadUrl_temp.toString();
+                    Picasso.with(AddPlantActivity.this).load(downloadUrl_temp).fit().centerCrop().into(uploadImageView);
+
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(AddPlantActivity.this, "Upload Failed!", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
+
         /*
         if (requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
             uploadImageView.setImageBitmap(imageBitmap);
         }
-        */
+
         if (requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK) {
 
             mProgress.setMessage("Uploading Image...");
@@ -217,7 +333,14 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
                 }
             });
         }
-    }
+<<<<<<< HEAD
+*/
+
+
+
+
+
+
 
     /**
      * addPlant() builds and uploads a plant object onto the database
@@ -279,7 +402,7 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
     }
 
     String mCurrentPhotoPath;
-    Uri photoUri;
+
 
     private File createImageFile() throws IOException {
 // Create an image file name
@@ -297,8 +420,26 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
         return image;
 
     }
+/*
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            uploadImageView.setImageBitmap(imageBitmap);
+            galleryAddPic();
+        }
+    }
+*/
+    private void galleryAddPic() {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        File f = new File(mCurrentPhotoPath);
+        Uri contentUri = Uri.fromFile(f);
+        mediaScanIntent.setData(contentUri);
+        this.sendBroadcast(mediaScanIntent);
+    }
 
-    static final int REQUEST_TAKE_PHOTO = 1;
+
 
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -314,11 +455,11 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(this,
+                photoURI = FileProvider.getUriForFile(this,
                         "com.example.android.fileprovider",
                         photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+                startActivityForResult(takePictureIntent, CAMERA_REQUEST_CODE);
             }
         }
     }
