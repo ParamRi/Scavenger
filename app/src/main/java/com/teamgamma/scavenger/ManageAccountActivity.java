@@ -66,7 +66,7 @@ public class ManageAccountActivity extends AppCompatActivity {
             finish();
         }
 
-            setContentView(R.layout.activity_manage_account);
+        setContentView(R.layout.activity_manage_account);
 
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -284,6 +284,7 @@ public class ManageAccountActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 signOut();
+                finish();
             }
         });
 
@@ -303,15 +304,15 @@ public class ManageAccountActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        auth.addAuthStateListener(authListener);
+        //auth.addAuthStateListener(authListener);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        if (authListener != null) {
-            auth.removeAuthStateListener(authListener);
-        }
+        //if (authListener != null) {
+          //  auth.removeAuthStateListener(authListener);
+        //}
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
