@@ -32,31 +32,42 @@ public class ManageAccountActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private FirebaseAuth.AuthStateListener authListener;
     private FirebaseAuth auth;
-
+    private FirebaseUser user;
+    private boolean user_signed_in_through_facebook = false;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         auth = FirebaseAuth.getInstance();
-        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        boolean user_signed_in_through_facebook = false;
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        user_signed_in_through_facebook = false;
         if(user != null) {
             for (UserInfo user_info : FirebaseAuth.getInstance().getCurrentUser().getProviderData()) {
-                if (user_info.getProviderId().equals("facebook.com")) {
+                //Toast.makeText(ManageAccountActivity.this, "Check!", Toast.LENGTH_SHORT).show();
+                if (user_info.getProviderId().toLowerCase().contains("facebook")) {
                     user_signed_in_through_facebook = true;
+                    Toast.makeText(ManageAccountActivity.this, "You are logged in through facebook!", Toast.LENGTH_SHORT).show();
+                    finish();
                     break;
                 }
             }
         }
+        /*
         if(user_signed_in_through_facebook ){
             //startActivity(new Intent(ManageAccountActivity.this, FaceBookLoginActivity.class));
             Toast.makeText(ManageAccountActivity.this, "You are logged in through facebook!", Toast.LENGTH_SHORT).show();
             finish();
         }
-        else{
-            setContentView(R.layout.activity_manage_account);
+        */
+        if(user == null){
+            Toast.makeText(ManageAccountActivity.this, "Sign In!", Toast.LENGTH_LONG).show();
+            startActivity(new Intent(ManageAccountActivity.this, LoginActivity.class));
+            finish();
         }
+
+            setContentView(R.layout.activity_manage_account);
+
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -67,12 +78,21 @@ public class ManageAccountActivity extends AppCompatActivity {
 
         //get current user
 
-
+/*
         authListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user == null) {
+                user = firebaseAuth.getCurrentUser();
+                for (UserInfo user_info : FirebaseAuth.getInstance().getCurrentUser().getProviderData()) {
+                    if (user_info.getProviderId().contains("facebook")) {
+                        user_signed_in_through_facebook = true;
+                        Toast.makeText(ManageAccountActivity.this, "You are logged in through facebook!", Toast.LENGTH_SHORT).show();
+                        finish();
+                        break;
+                    }
+                }
+
+                if (user == null || user_signed_in_through_facebook) {
                     // user auth state is changed - user is null
                     // launch login activity
                     Toast.makeText(ManageAccountActivity.this, "Sign In!", Toast.LENGTH_LONG).show();
@@ -81,7 +101,7 @@ public class ManageAccountActivity extends AppCompatActivity {
                 }
             }
         };
-
+*/
         btnChangeEmail = (Button) findViewById(R.id.change_email_button);
         btnChangePassword = (Button) findViewById(R.id.change_password_button);
         btnSendResetEmail = (Button) findViewById(R.id.sending_pass_reset_button);
