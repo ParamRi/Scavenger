@@ -54,5 +54,5 @@
         android:text="Add Photo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/button3" />
+        android:id="@+id/button3"/>
 </LinearLayout>

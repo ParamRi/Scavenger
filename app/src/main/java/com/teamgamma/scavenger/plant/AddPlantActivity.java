@@ -3,16 +3,10 @@ package com.teamgamma.scavenger.plant;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-
-import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -84,37 +78,7 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         gps_enabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         network_enabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-/*
-        if (gps_enabled) {
-            if (location == null) {
-                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
-                    return;
-                }
-                locationManager.requestLocationUpdates(
-                        LocationManager.GPS_PROVIDER,
-                        MIN_TIME_BW_UPDATES,
-                        MIN_DISTANCE_CHANGE_FOR_UPDATES, (android.location.LocationListener) this);
-                Log.d("activity", "RLOC: GPS Enabled");
-                if (locationManager != null) {
-                    location = locationManager
-                            .getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                    if (location != null) {
-                        Log.d("activity", "RLOC: loc by GPS");
 
-                        latitude = location.getLatitude();
-                        longitude = location.getLongitude();
-                    }
-                }
-            }
-        }
-        */
         LatLng plantLocation = getIntent().getExtras().getParcelable("LatLng");
         latitude = plantLocation.latitude;
         longitude = plantLocation.longitude;
@@ -175,101 +139,12 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
                     //Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     //startActivityForResult(intent, CAMERA_REQUEST_CODE);
                    //}
-
-
-
             }
 
         });
-
     }
 
-
-/*
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==CAMERA_REQUEST_CODE && resultCode==RESULT_OK){
-
-// Describe the columns you'd like to have returned. Selecting from the Thumbnails location gives you both the Thumbnail Image ID, as well as the original image ID
-            String[] projection = {
-                    MediaStore.Images.Thumbnails._ID,  // The columns we want
-                    MediaStore.Images.Thumbnails.IMAGE_ID,
-                    MediaStore.Images.Thumbnails.KIND,
-                    MediaStore.Images.Thumbnails.DATA};
-            String selection = MediaStore.Images.Thumbnails.KIND + "="  + // Select only mini's
-                    MediaStore.Images.Thumbnails.MINI_KIND;
-
-            String sort = MediaStore.Images.Thumbnails._ID + " DESC";
-
-//At the moment, this is a bit of a hack, as I'm returning ALL images, and just taking the latest one. There is a better way to narrow this down I think with a WHERE clause which is currently the selection variable
-            Cursor myCursor = getContentResolver().query(MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI, projection, selection, null, sort);
-
-            long imageId = 0l;
-            long thumbnailImageId = 0l;
-            String thumbnailPath = "";
-
-            try{
-                myCursor.moveToFirst();
-                imageId = myCursor.getLong(myCursor.getColumnIndexOrThrow(MediaStore.Images.Thumbnails.IMAGE_ID));
-                thumbnailImageId = myCursor.getLong(myCursor.getColumnIndexOrThrow(MediaStore.Images.Thumbnails._ID));
-                thumbnailPath = myCursor.getString(myCursor.getColumnIndexOrThrow(MediaStore.Images.Thumbnails.DATA));
-            }
-            finally{myCursor.close();}
-
-            //Create new Cursor to obtain the file Path for the large image
-
-            String[] largeFileProjection = {
-                    MediaStore.Images.ImageColumns._ID,
-                    MediaStore.Images.ImageColumns.DATA
-            };
-
-            String largeFileSort = MediaStore.Images.ImageColumns._ID + " DESC";
-            myCursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, largeFileProjection, null, null, largeFileSort);
-            String largeImagePath = "";
-
-            try{
-                myCursor.moveToFirst();
-
-//This will actually give yo uthe file path location of the image.
-                largeImagePath = myCursor.getString(myCursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATA));
-            }
-            finally{myCursor.close();}
-            // These are the two URI's you'll be interested in. They give you a handle to the actual images
-            Uri uri = Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, String.valueOf(imageId));
-            Uri uriThumbnailImage = Uri.withAppendedPath(MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI, String.valueOf(thumbnailImageId));
-
-// I've left out the remaining code, as all I do is assign the URI's to my own objects anyways...
-
-            StorageReference filepath = API.getStorageReference().child("Photos").child(uri.getLastPathSegment());
-            filepath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    mProgress.dismiss();
-
-                    Toast.makeText(AddPlantActivity.this, "Upload Successful!", Toast.LENGTH_SHORT).show();
-
-                    @SuppressWarnings("VisibleForTests") Uri downloadUrl_temp = taskSnapshot.getDownloadUrl();
-                    downloadUrlString = downloadUrl_temp.toString();
-                    Picasso.with(AddPlantActivity.this).load(downloadUrl_temp).fit().centerCrop().into(uploadImageView);
-
-
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(AddPlantActivity.this, "Upload Failed!", Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
-    }
-
-*/
-
-
-
-    @Override
-
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -298,50 +173,6 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
-        /*
-        if (requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            uploadImageView.setImageBitmap(imageBitmap);
-        }
-
-        if (requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK) {
-
-            mProgress.setMessage("Uploading Image...");
-            mProgress.show();
-            Uri uri = data.getData();
-
-            StorageReference filepath = API.getStorageReference().child("Photos").child(uri.getLastPathSegment());
-            filepath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    mProgress.dismiss();
-
-                    Toast.makeText(AddPlantActivity.this, "Upload Successful!", Toast.LENGTH_SHORT).show();
-
-                    @SuppressWarnings("VisibleForTests") Uri downloadUrl_temp = taskSnapshot.getDownloadUrl();
-                    downloadUrlString = downloadUrl_temp.toString();
-                    Picasso.with(AddPlantActivity.this).load(downloadUrl_temp).fit().centerCrop().into(uploadImageView);
-
-
-
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(AddPlantActivity.this, "Upload Failed!", Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
-<<<<<<< HEAD
-*/
-
-
-
-
-
-
-
     /**
      * addPlant() builds and uploads a plant object onto the database
      */
@@ -353,9 +184,6 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
         API.getDatabaseReference().child("plants").child(plantId).setValue(createPlant);
         API.getGeoFire().setLocation(plantId, new GeoLocation(latitude, longitude));
         System.out.println("added plant");
-        //DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-        //mDatabase.child("plants_with_image").push().setValue(createPlant);
-        //System.out.println("added plant");
         Toast.makeText(AddPlantActivity.this, "Plant has been added into the databse", Toast.LENGTH_SHORT).show();
         finish();
     }
