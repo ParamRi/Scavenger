@@ -21,6 +21,7 @@ public class Plant implements Parcelable{
         plantName = "";
         sciName = "";
         desc = "";
+        downloadUrlString = "";
     }
 
     public Plant(String plantName, String sciName, String description, boolean isEdible,
@@ -120,8 +121,8 @@ public class Plant implements Parcelable{
         parcel.writeString(desc);
         parcel.writeInt((isEdible) ? 1 : 0);
         parcel.writeInt((isVerified) ? 1 : 0);
-        parcel.writeDouble(latitude);
-        parcel.writeDouble(longitude);
+        parcel.writeDouble(latitude == null ? 0 : latitude);
+        parcel.writeDouble(longitude == null ? 0 : longitude);
         parcel.writeString(downloadUrlString);
     }
 

@@ -113,6 +113,7 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
     private GeoFire mGeoFire;
     private Map<Marker, String> hashMarkers;
     private List<Plant> plantList;
+    private Intent intent;
 
     private FragmentManager mFragmentManager;
     private FragmentTransaction mFragmentTransaction;
@@ -446,14 +447,15 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
         {
             @Override
             public boolean onMarkerClick(Marker arg0) {
-                final Intent i = new Intent(PlantMapActivity.this, PlantDescriptionActivity.class);
+                intent = new Intent(PlantMapActivity.this, PlantDescriptionActivity.class);
                 String key = hashMarkers.get(arg0);
                 Query plantQuery = API.getDatabaseReference().child("plants").child(key).orderByValue();
                 plantQuery.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         Plant getPlant = dataSnapshot.getValue(Plant.class);
-                        i.putExtra("Plant Info", getPlant);
+                        intent.putExtra("Plant Info", getPlant);
+                        startActivity(intent);
                     }
 
                     @Override
@@ -463,7 +465,7 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
                 });
 
                 Toast.makeText(PlantMapActivity.this, arg0.getTitle(), Toast.LENGTH_SHORT).show();// display toast
-                startActivity(i);
+
                 return false;
             }
 

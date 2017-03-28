@@ -20,7 +20,8 @@ public class PlantDescriptionActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        plantInfo = getIntent().getExtras().getParcelable("Plant Info");
+        Bundle b = getIntent().getExtras();
+        plantInfo = b.getParcelable("Plant Info");
         //Get Firebase auth instance
 
         // set the view now
