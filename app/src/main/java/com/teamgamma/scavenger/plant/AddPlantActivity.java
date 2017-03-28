@@ -35,6 +35,8 @@ import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
@@ -209,6 +211,7 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
             long thumbnailImageId = 0l;
             String thumbnailPath = "";
 
+
             try{
                 myCursor.moveToFirst();
                 imageId = myCursor.getLong(myCursor.getColumnIndexOrThrow(MediaStore.Images.Thumbnails.IMAGE_ID));
@@ -346,20 +349,35 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
      * addPlant() builds and uploads a plant object onto the database
      */
     public void addPlant(View view) {
-        createPlant = new Plant(plantNameText.getText().toString(), plantSciNameText.getText().toString(),
-                plantDescText.getText().toString(),
-                edibilityCheckBox.isChecked(), false, latitude, longitude, downloadUrlString);
-        String plantId = API.getDatabaseReference().child("plants").push().getKey();
-        API.getDatabaseReference().child("plants").child(plantId).setValue(createPlant);
-        API.getGeoFire().setLocation(plantId, new GeoLocation(latitude, longitude));
-        System.out.println("added plant");
-        //DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-        //mDatabase.child("plants_with_image").push().setValue(createPlant);
-        //System.out.println("added plant");
-        Toast.makeText(AddPlantActivity.this, "Plant has been added into the databse", Toast.LENGTH_SHORT).show();
-        finish();
-    }
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            if (plantNameText.getText().length() == 0) {
+                Toast.makeText(AddPlantActivity.this, "Plant Name field cannot be empty", Toast.LENGTH_SHORT).show();
 
+            } else if (plantDescText.getText().length() == 0) {
+                Toast.makeText(AddPlantActivity.this, "Plant Description field cannot be empty", Toast.LENGTH_SHORT).show();
+
+            } else {
+                createPlant = new Plant(plantNameText.getText().toString(), plantSciNameText.getText().toString(),
+                        plantDescText.getText().toString(),
+                        edibilityCheckBox.isChecked(), false, latitude, longitude,
+                        downloadUrlString, user.getDisplayName(), user.getEmail());
+                String plantId = API.getDatabaseReference().child("plants").push().getKey();
+                API.getDatabaseReference().child("plants").child(plantId).setValue(createPlant);
+                API.getGeoFire().setLocation(plantId, new GeoLocation(latitude, longitude));
+                System.out.println("added plant");
+                //DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+                //mDatabase.child("plants_with_image").push().setValue(createPlant);
+                //System.out.println("added plant");
+                Toast.makeText(AddPlantActivity.this, "Plant has been added into the databse", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        }
+        else{
+            Toast.makeText(AddPlantActivity.this, "You need to be Logged in to add a plant", Toast.LENGTH_SHORT).show();
+
+        }
+    }
     @Override
     public void onLocationChanged(Location location) {
 

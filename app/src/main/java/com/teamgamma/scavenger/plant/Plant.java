@@ -3,6 +3,8 @@ package com.teamgamma.scavenger.plant;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.firebase.auth.FirebaseUser;
+
 /**
  * Plant Object containing all plant information
  */
@@ -16,16 +18,20 @@ public class Plant implements Parcelable{
     private Double latitude;
     private Double longitude;
     private String downloadUrlString;
+    private String userName;
+    private String userEmail;
 
     public Plant() {
         plantName = "";
         sciName = "";
         desc = "";
         downloadUrlString = "";
+        userEmail = "";
+        userName = "";
     }
 
     public Plant(String plantName, String sciName, String description, boolean isEdible,
-                     boolean isVerified, double latitude, double longitude, String downloadUrlString) {
+                     boolean isVerified, double latitude, double longitude, String downloadUrlString, String userName, String userEmail) {
         this.plantName = plantName;
         this.sciName = sciName;
         this.desc = description;
@@ -34,6 +40,11 @@ public class Plant implements Parcelable{
         this.latitude = latitude;
         this.longitude = longitude;
         this.downloadUrlString = downloadUrlString;
+        this.userName = userName;
+        this.userEmail = userEmail;
+
+
+
     }
 
     public void setPlantName(String plantName) {
@@ -68,6 +79,14 @@ public class Plant implements Parcelable{
         this.downloadUrlString = downloadUrlString;
     }
 
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
+    }
+
     public String getPlantName() {
         return plantName;
     }
@@ -98,6 +117,14 @@ public class Plant implements Parcelable{
 
     public String getDownloadUrlString() { return downloadUrlString; }
 
+    public String getUserEmail() {
+        return userEmail;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
     public Plant(Parcel in) {
         plantName = in.readString();
         sciName = in.readString();
@@ -107,6 +134,8 @@ public class Plant implements Parcelable{
         latitude = in.readDouble();
         longitude = in.readDouble();
         downloadUrlString = in.readString();
+        userName = in.readString();
+        userEmail = in.readString();
     }
 
     @Override
@@ -124,6 +153,9 @@ public class Plant implements Parcelable{
         parcel.writeDouble(latitude == null ? 0 : latitude);
         parcel.writeDouble(longitude == null ? 0 : longitude);
         parcel.writeString(downloadUrlString);
+        parcel.writeString(userName);
+        parcel.writeString(userEmail);
+
     }
 
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
