@@ -3,8 +3,10 @@ package com.teamgamma.scavenger;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.teamgamma.scavenger.plant.Plant;
 
 /**
@@ -15,6 +17,7 @@ public class PlantDescriptionActivity extends AppCompatActivity{
 
     private Plant plantInfo;
     private TextView plantNameText, sciNameText, descText;
+    private ImageView plantImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +36,14 @@ public class PlantDescriptionActivity extends AppCompatActivity{
         sciNameText.setText(plantInfo.getSciName());
         descText = (TextView) findViewById(R.id.textView5);
         descText.setText(plantInfo.getDescription());
+        plantImage = (ImageView) findViewById(R.id.imageView);
+
+        String imageURI = plantInfo.getDownloadUrlString();
+        if(imageURI.length() > 0) {
+            Glide.with(this)
+                    .load(imageURI)
+                    .into(plantImage);
+        }
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
