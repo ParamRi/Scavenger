@@ -295,8 +295,14 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                image_marker_pin.setVisibility(View.VISIBLE);
-                animateFAB();
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                if (user != null) {
+                      image_marker_pin.setVisibility(View.VISIBLE);
+                    animateFAB();
+                } else {
+                    Toast.makeText(PlantMapActivity.this, "You need to be logged in to Add a plant", Toast.LENGTH_SHORT).show();
+
+                }
             }
         });
 
@@ -460,8 +466,11 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
         }
 
         if(mLastLocation != null) {
-            populateMarkersOnMap(mMap, new LatLng(mLastLocation.getLatitude(),
-                    mLastLocation.getLongitude()), 100);
+            //populateMarkersOnMap(mMap, new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude()), 100);
+            CameraPosition cameraPosition = mMap.getCameraPosition();
+            populateMarkersOnMap(mMap, cameraPosition.target, 100);
+
+
         } else {
             populateMarkersOnMap(mMap, new LatLng(33, -83), 500);
         }
@@ -503,6 +512,15 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
 
         });
         mMap.setOnMapLongClickListener(this);
+
+        mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
+            @Override
+            public void onCameraIdle() {
+                CameraPosition cameraPosition = mMap.getCameraPosition();
+                //Toast.makeText(PlantMapActivity.this, "Cam Idle Listener", Toast.LENGTH_SHORT).show();
+                populateMarkersOnMap(mMap, cameraPosition.target, 100 );
+            }
+        });
     }
 
     /**
