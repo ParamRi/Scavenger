@@ -120,11 +120,14 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
     private boolean isFabOpen = false;
     private FloatingActionButton fab,fab1,fab2;
     private Animation fab_open,fab_close,rotate_forward,rotate_backward;
+    private boolean user_signed_in_through_facebook = false;
+    FirebaseUser user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        auth = FirebaseAuth.getInstance();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         final Geocoder geocoder = new Geocoder(this);
         setContentView(R.layout.activity_plant_map);
 
@@ -309,7 +312,29 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
                 animateFAB();
             }
         });
+/*
+        authListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+                if(user != null) {
+                    for (UserInfo user_info : FirebaseAuth.getInstance().getCurrentUser().getProviderData()) {
+                        if (user_info.getProviderId().toLowerCase().contains("facebook")) {
+                            user_signed_in_through_facebook = true;
+                            break;
+                        }
+                    }
+                }
+
+
+
+            }
+        };
+        */
     }
+
 
     @Override
     public void onMapLongClick(LatLng latLng){
@@ -320,10 +345,10 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
                 double lat_diff = Math.abs(mLastLocation.getLatitude() - latLng.latitude);
                 double long_diff = Math.abs(mLastLocation.getLatitude() - latLng.latitude);
                 if(mMap !=null && lat_diff < 0.01 && long_diff < 0.01){
-                    mMap.addMarker(markerOptions);
+                   // mMap.addMarker(markerOptions);
                 }
                 else{
-                    Toast.makeText(PlantMapActivity.this, "You cannot add a new plant this far from your location!", Toast.LENGTH_SHORT).show();
+                   // Toast.makeText(PlantMapActivity.this, "You cannot add a new plant this far from your location!", Toast.LENGTH_SHORT).show();
                 }
 
 
@@ -347,19 +372,23 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
 
     private void signOut() {
         auth = FirebaseAuth.getInstance();
-        FirebaseUser user = auth.getCurrentUser();
-        boolean user_signed_in_through_facebook = false;
+        user = auth.getCurrentUser();
+        //boolean user_signed_in_through_facebook = false;
+
         if(user != null) {
             for (UserInfo user_info : FirebaseAuth.getInstance().getCurrentUser().getProviderData()) {
-                if (user_info.getProviderId().equals("facebook.com")) {
+                if (user_info.getProviderId().contains("facebook")) {
                     user_signed_in_through_facebook = true;
                     break;
                 }
             }
         }
+
         if(user_signed_in_through_facebook && user!= null){
-            auth.signOut();
             LoginManager.getInstance().logOut();
+            auth.signOut();
+
+            Toast.makeText(PlantMapActivity.this, "User Facebook Signed Out!", Toast.LENGTH_SHORT).show();
         } else if(user!= null){
             auth.signOut();
             Toast.makeText(PlantMapActivity.this, "User Signed Out!", Toast.LENGTH_SHORT).show();
