@@ -26,6 +26,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -122,6 +123,7 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
     private Animation fab_open,fab_close,rotate_forward,rotate_backward;
     private boolean user_signed_in_through_facebook = false;
     FirebaseUser user;
+    private String plantDescKey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -477,13 +479,14 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
             @Override
             public boolean onMarkerClick(Marker arg0) {
                 intent = new Intent(PlantMapActivity.this, PlantDescriptionActivity.class);
-                String key = hashMarkers.get(arg0);
-                Query plantQuery = API.getDatabaseReference().child("plants").child(key).orderByValue();
+                plantDescKey = hashMarkers.get(arg0);
+                Query plantQuery = API.getDatabaseReference().child("plants").child(plantDescKey).orderByValue();
                 plantQuery.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         Plant getPlant = dataSnapshot.getValue(Plant.class);
                         intent.putExtra("Plant Info", getPlant);
+                        intent.putExtra("key", plantDescKey);
                         startActivity(intent);
                     }
 
@@ -526,9 +529,13 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         Plant getPlant = dataSnapshot.getValue(Plant.class);
-                        getPlant.setLatitude(location.latitude);
-                        getPlant.setLongitude(location.longitude);
-                        plantList.add(getPlant);
+                        if(null != getPlant) {
+                            getPlant.setLatitude(location.latitude);
+                            getPlant.setLongitude(location.longitude);
+                            plantList.add(getPlant);
+                        } else {
+                            Log.d("plantNull", "Plant is null");
+                        }
                     }
 
                     @Override

@@ -46,6 +46,7 @@ public class PlantDescriptionActivity extends AppCompatActivity{
     private static final int CAMERA_REQUEST_CODE = 1;
     private String downloadUrlString;
     private ImageView uploadImageView;
+    private String plantDescKey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +54,7 @@ public class PlantDescriptionActivity extends AppCompatActivity{
 
         Bundle b = getIntent().getExtras();
         plantInfo = b.getParcelable("Plant Info");
+        plantDescKey = b.getString("key");
 
         mProgress = new ProgressDialog(this);
 
@@ -140,8 +142,11 @@ public class PlantDescriptionActivity extends AppCompatActivity{
                     mProgress.dismiss();
                     @SuppressWarnings("VisibleForTests") Uri downloadUrl_temp = taskSnapshot.getDownloadUrl();
                     downloadUrlString = downloadUrl_temp.toString();
+                    plantInfo.setDownloadUrlString(downloadUrlString);
                     Picasso.with(PlantDescriptionActivity.this).load(downloadUrl_temp).fit().centerCrop().into(plantImage);
-
+                    //update plant;
+                    API.getDatabaseReference().child("plants").child(plantDescKey).setValue(plantInfo);
+                    Toast.makeText(PlantDescriptionActivity.this, "Plant has been updated", Toast.LENGTH_SHORT).show();
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
