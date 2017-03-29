@@ -532,6 +532,7 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
      */
     public void populateMarkersOnMap(GoogleMap googleMap, LatLng currLocation, int radius){
         mMap = googleMap;
+        plantList = new ArrayList<Plant>();
         mGeoFire = new GeoFire(API.getDatabaseReference().child("plant_location"));
         GeoQuery getPlants = mGeoFire.queryAtLocation(new GeoLocation(currLocation.latitude, currLocation.longitude), radius);
         getPlants.addGeoQueryEventListener(new GeoQueryEventListener() {
