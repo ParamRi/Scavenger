@@ -16,20 +16,19 @@ public class Plant implements Parcelable{
     private Double latitude;
     private Double longitude;
     private String downloadUrlString;
-    private String userName;
-    private String userEmail;
+    private String userId;
 
     public Plant() {
         plantName = "";
         sciName = "";
         desc = "";
         downloadUrlString = "";
-        userEmail = "";
-        userName = "";
+        userId = "";
+
     }
 
     public Plant(String plantName, String sciName, String description, boolean isEdible,
-                     boolean isVerified, double latitude, double longitude, String downloadUrlString, String userName, String userEmail) {
+                     boolean isVerified, double latitude, double longitude, String downloadUrlString, String userId) {
         this.plantName = plantName;
         this.sciName = sciName;
         this.desc = description;
@@ -38,8 +37,7 @@ public class Plant implements Parcelable{
         this.latitude = latitude;
         this.longitude = longitude;
         this.downloadUrlString = downloadUrlString;
-        this.userName = userName;
-        this.userEmail = userEmail;
+        this.userId = userId;
 
     }
 
@@ -75,12 +73,8 @@ public class Plant implements Parcelable{
         this.downloadUrlString = downloadUrlString;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public void setUserEmail(String userEmail) {
-        this.userEmail = userEmail;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getPlantName() {
@@ -113,12 +107,8 @@ public class Plant implements Parcelable{
 
     public String getDownloadUrlString() { return downloadUrlString; }
 
-    public String getUserEmail() {
-        return userEmail;
-    }
-
-    public String getUserName() {
-        return userName;
+    public String getUserId() {
+        return userId;
     }
 
     public Plant(Parcel in) {
@@ -130,8 +120,8 @@ public class Plant implements Parcelable{
         latitude = in.readDouble();
         longitude = in.readDouble();
         downloadUrlString = in.readString();
-        userName = in.readString();
-        userEmail = in.readString();
+        userId = in.readString();
+
     }
 
     @Override
@@ -149,8 +139,7 @@ public class Plant implements Parcelable{
         parcel.writeDouble(latitude == null ? 0 : latitude);
         parcel.writeDouble(longitude == null ? 0 : longitude);
         parcel.writeString(downloadUrlString);
-        parcel.writeString(userName);
-        parcel.writeString(userEmail);
+        parcel.writeString(userId);
 
     }
 
