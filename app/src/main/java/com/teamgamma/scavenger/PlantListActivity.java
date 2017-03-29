@@ -1,13 +1,14 @@
 package com.teamgamma.scavenger;
 
-import android.app.ListActivity;
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.teamgamma.scavenger.plant.Plant;
+import com.teamgamma.scavenger.plant.PlantList;
 
 import java.util.List;
 
@@ -15,26 +16,43 @@ import java.util.List;
  * A fragment representing a list of Items.
  * <p/>
  */
-public class PlantListActivity extends ListActivity {
+public class PlantListActivity extends Activity {
 
     private List<Plant> plantList;
+    private ListView list;
+    private String[] values;
+    private String[] images;
 
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
+        setContentView(R.layout.plant_list);
+
         plantList = getIntent().getExtras().getParcelableArrayList("PlantList");
 
-        String[] values = new String[plantList.size()];
+        values = new String[plantList.size()];
+        images = new String[plantList.size()];
         for(int i = 0; i < plantList.size(); i++) {
-            values[i] = plantList.get(i).getPlantName();
+            if(null != plantList.get(i).getPlantName() ) {
+                values[i] = plantList.get(i).getPlantName();
+            } else {
+                values[i] = "no name available";
+            }
+            if(plantList.get(i).getDownloadUrlString() != null) {
+                images[i] = plantList.get(i).getDownloadUrlString();
+            }
         }
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, values);
-        setListAdapter(adapter);
-    }
+        PlantList adapter = new PlantList(PlantListActivity.this,
+                values, images);
+        list = (ListView) findViewById(R.id.list);
+        list.setAdapter(adapter);
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
-    @Override
-    protected void onListItemClick(ListView l, View v, int position, long id) {
-        String item = (String) getListAdapter().getItem(position);
-        Toast.makeText(this, item + " selected", Toast.LENGTH_LONG).show();
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+                Toast.makeText(PlantListActivity.this, "You Clicked at " + values[+ position], Toast.LENGTH_SHORT).show();
+
+            }
+        });
     }
 }
