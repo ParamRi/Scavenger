@@ -87,7 +87,7 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
         plantNameText = (EditText) findViewById(R.id.plantNameText);
         plantSciNameText = (EditText) findViewById(R.id.sciNameText);
         plantDescText = (EditText) findViewById(R.id.descriptionTextEditor);
-        uploadImageView = (ImageView) findViewById(R.id.imageView3);
+        uploadImageView = (ImageView) findViewById(R.id.plantImageView);
 
         plantNameText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 
@@ -163,7 +163,7 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
                     mProgress.dismiss();
                     @SuppressWarnings("VisibleForTests") Uri downloadUrl_temp = taskSnapshot.getDownloadUrl();
                     downloadUrlString = downloadUrl_temp.toString();
-                    Picasso.with(AddPlantActivity.this).load(downloadUrl_temp).fit().centerCrop().into(uploadImageView);
+                    Picasso.with(AddPlantActivity.this).load(downloadUrl_temp).fit().centerCrop().rotate(90).into(uploadImageView);
 
                 }
             }).addOnFailureListener(new OnFailureListener() {
