@@ -11,7 +11,7 @@
         android:id="@+id/plantImageView"
         android:layout_width="match_parent"
         android:layout_height="122dp"
-        android:layout_weight="0.00"
+        android:layout_weight="0.04"
         app:srcCompat="@drawable/plant_add" />
 
     <EditText
@@ -36,7 +36,7 @@
         android:id="@+id/checkBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="0.01"
+        android:layout_weight="0.00"
         android:text="Edibile" />
 
     <EditText
@@ -56,16 +56,9 @@
 
         <Button
             android:id="@+id/addImageButton"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="41dp"
-            android:text="Add Photo"
-            android:layout_weight="0.92" />
-
-        <ImageView
-        android:id="@+id/imageView3"
-        android:layout_width="149dp"
-        android:layout_height="47dp"
-        app:srcCompat="@drawable/plant_add_small" />
+            android:text="Add Photo" />
 
 
     </LinearLayout>
