@@ -547,8 +547,8 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
                 plantQuery.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        Plant getPlant = dataSnapshot.getValue(Plant.class);
-                        if(null != getPlant) {
+                        if(null != dataSnapshot.getValue(Plant.class)) {
+                            Plant getPlant = dataSnapshot.getValue(Plant.class);
                             getPlant.setLatitude(location.latitude);
                             getPlant.setLongitude(location.longitude);
                             plantList.add(getPlant);

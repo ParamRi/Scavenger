@@ -20,12 +20,14 @@ public class PlantList extends ArrayAdapter<String> {
     private final Activity context;
     private final String[] plantNames;
     private final String[] imageId;
+    private final String[] desclist;
     public PlantList(Activity context,
-                      String[] plantNames, String[] imageId) {
+                      String[] plantNames, String[] imageId, String[] desclist) {
         super(context, R.layout.fragment_plant, plantNames);
         this.context = context;
         this.plantNames = plantNames;
         this.imageId = imageId;
+        this.desclist = desclist;
     }
 
     @Override
@@ -33,9 +35,10 @@ public class PlantList extends ArrayAdapter<String> {
         LayoutInflater inflater = context.getLayoutInflater();
         View rowView= inflater.inflate(R.layout.fragment_plant, null, true);
         TextView txtTitle = (TextView) rowView.findViewById(R.id.plantName);
-
+        TextView txtDesc = (TextView) rowView.findViewById(R.id.plantDesc);
         ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
         txtTitle.setText(plantNames[position]);
+        txtDesc.setText(desclist[position]);
 
         if(imageId[position] != null){
             Glide.with(this.getContext())

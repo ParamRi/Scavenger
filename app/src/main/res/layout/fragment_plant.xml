@@ -5,18 +5,23 @@
     <TableRow>
         <ImageView
             android:id="@+id/icon"
-            android:layout_width="50dp"
-            android:layout_height="50dp"/>
+            android:layout_width="100dp"
+            android:layout_height="100dp" />
 
         <TextView
             android:id="@+id/plantName"
             android:layout_width="wrap_content"
-            android:layout_height="50dp" />
+            android:layout_height="50dp"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_margin="@dimen/activity_horizontal_margin"/>
 
         <TextView
             android:id="@+id/plantDesc"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:layout_margin="@dimen/activity_vertical_margin" />
     </TableRow>
 
 </TableLayout>

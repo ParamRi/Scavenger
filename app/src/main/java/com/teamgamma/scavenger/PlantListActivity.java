@@ -22,6 +22,7 @@ public class PlantListActivity extends Activity {
     private ListView list;
     private String[] values;
     private String[] images;
+    private String[] descList;
 
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
@@ -29,20 +30,24 @@ public class PlantListActivity extends Activity {
 
         plantList = getIntent().getExtras().getParcelableArrayList("PlantList");
 
-        values = new String[plantList.size()];
-        images = new String[plantList.size()];
-        for(int i = 0; i < plantList.size(); i++) {
-            if(null != plantList.get(i).getPlantName() ) {
-                values[i] = plantList.get(i).getPlantName();
+        int arraySize = plantList.size();
+        values = new String[arraySize];
+        images = new String[arraySize];
+        descList = new String[arraySize];
+        for(int i = 0; i < arraySize; i++) {
+            Plant aPlant = plantList.get(i);
+            if(null != aPlant.getPlantName() ) {
+                values[i] = aPlant.getPlantName();
             } else {
                 values[i] = "no name available";
             }
+            descList[i] = aPlant.getDescription();
             if(plantList.get(i).getDownloadUrlString() != null) {
                 images[i] = plantList.get(i).getDownloadUrlString();
             }
         }
         PlantList adapter = new PlantList(PlantListActivity.this,
-                values, images);
+                values, images, descList);
         list = (ListView) findViewById(R.id.list);
         list.setAdapter(adapter);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
