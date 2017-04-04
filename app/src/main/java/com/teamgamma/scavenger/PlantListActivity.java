@@ -1,6 +1,7 @@
 package com.teamgamma.scavenger;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -56,7 +57,15 @@ public class PlantListActivity extends Activity {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
                 Toast.makeText(PlantListActivity.this, "You Clicked at " + values[+ position], Toast.LENGTH_SHORT).show();
-
+                Plant plantInfo = plantList.get(position);
+                if((plantInfo.getLatitude() >= -90 || plantInfo.getLatitude() <= 90)
+                        && (plantInfo.getLongitude() >= -180 || plantInfo.getLongitude() <= 180)) {
+                    Intent i = new Intent();
+                    i.putExtra("latitude", plantInfo.getLatitude());
+                    i.putExtra("longitude", plantInfo.getLongitude());
+                    setResult(RESULT_OK, i);
+                    finish();
+                }
             }
         });
     }

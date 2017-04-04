@@ -97,6 +97,8 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
     private Location mLastLocation;
     private LocationRequest mLocationRequest;
     private Marker mCurrLocationMarker;
+    private final int PLANT_LIST_RETURN_CODE = 1;
+    private final int PLANT_DESC_RETURN_CODE = 2;
 
     private FirebaseAuth.AuthStateListener mAuthListener;
     private static final String TAG = "EmailPassword";
@@ -498,7 +500,7 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
                         Plant getPlant = dataSnapshot.getValue(Plant.class);
                         intent.putExtra("Plant Info", getPlant);
                         intent.putExtra("key", plantDescKey);
-                        startActivity(intent);
+                        startActivityForResult(intent, 2);
                     }
 
                     @Override
@@ -600,7 +602,6 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
         mGoogleApiClient.connect();
     }
 
-
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
     }
@@ -665,7 +666,7 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
                     case 1:
                         Intent i = new Intent(PlantMapActivity.this, PlantListActivity.class);
                         i.putParcelableArrayListExtra("PlantList", (ArrayList<? extends Parcelable>) plantList);
-                        startActivity(i);
+                        startActivityForResult(i, 1);
                         break;
                     case 2: //Third item
                         startActivity(new Intent(PlantMapActivity.this, LoginActivity.class));
@@ -684,6 +685,19 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
                 }
             }
         });
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 1) { //list return
+            double latitude = data.getIntExtra("latitude", 35);
+            double longitude = data.getIntExtra("longitude", -83);
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(latitude, longitude)));
+        } else if (requestCode == 2) { //plant desc return
+            double latitude = data.getIntExtra("latitude", 33);
+            double longitude = data.getIntExtra("longitude", -83);
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(latitude, longitude)));
+        }
     }
 
     private void setupDrawer() {

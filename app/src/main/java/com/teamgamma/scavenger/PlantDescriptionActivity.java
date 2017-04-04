@@ -39,7 +39,7 @@ public class PlantDescriptionActivity extends AppCompatActivity{
     private Plant plantInfo;
     private TextView plantNameText, sciNameText, descText;
     private ImageView plantImage;
-    private Button addImageButton;
+    private Button addImageButton, findPlantButton;
     private ProgressDialog mProgress;
     private String imageURI;
     private Uri photoURI;
@@ -69,6 +69,7 @@ public class PlantDescriptionActivity extends AppCompatActivity{
         descText.setText(plantInfo.getDescription());
         plantImage = (ImageView) findViewById(R.id.imageView);
         addImageButton = (Button) findViewById(R.id.button3);
+        findPlantButton = (Button) findViewById(R.id.findPlantButton);
 
         imageURI = plantInfo.getDownloadUrlString();
 
@@ -89,6 +90,20 @@ public class PlantDescriptionActivity extends AppCompatActivity{
                     .load(imageURI)
                     .into(plantImage);
         }
+
+        findPlantButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if((plantInfo.getLatitude() >= -90 || plantInfo.getLatitude() <= 90)
+                        && (plantInfo.getLongitude() >= -180 || plantInfo.getLongitude() <= 180)) {
+                    Intent i = new Intent();
+                    i.putExtra("latitude", plantInfo.getLatitude());
+                    i.putExtra("longitude", plantInfo.getLongitude());
+                    setResult(RESULT_OK, i);
+                    finish();
+                }
+            }
+        });
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);

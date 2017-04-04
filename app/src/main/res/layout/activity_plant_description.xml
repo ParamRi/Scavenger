@@ -41,7 +41,7 @@
         android:text="Let's Go"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/button4"
+        android:id="@+id/findPlantButton"
         android:layout_weight="0.38" />
 
     <Button
