@@ -3,13 +3,14 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#375b37"
     android:paddingLeft="8dp"
     android:paddingRight="8dp">
 
     <ListView android:id="@+id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#6dd96d"
+        android:background="#92c492"
         android:layout_weight="1"
         android:drawSelectorOnTop="false"/>
 
