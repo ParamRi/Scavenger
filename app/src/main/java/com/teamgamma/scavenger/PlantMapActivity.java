@@ -74,6 +74,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.teamgamma.scavenger.API.API;
+import com.teamgamma.scavenger.API.ProximitySorter;
 import com.teamgamma.scavenger.plant.AddPlantActivity;
 import com.teamgamma.scavenger.plant.Plant;
 
@@ -473,7 +474,7 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
         if(mLastLocation != null) {
             //populateMarkersOnMap(mMap, new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude()), 100);
             CameraPosition cameraPosition = mMap.getCameraPosition();
-            populateMarkersOnMap(mMap, cameraPosition.target, 100);
+            populateMarkersOnMap(mMap, cameraPosition.target, 50);
 
 
         } else {
@@ -665,8 +666,10 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
                         Toast.makeText(PlantMapActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
                         break;
                     case 1:
+                        CameraPosition cameraPosition = mMap.getCameraPosition();
+                        ArrayList<Plant> sortedList = new ProximitySorter(plantList, cameraPosition.target).sortByDistance();
                         Intent i = new Intent(PlantMapActivity.this, PlantListActivity.class);
-                        i.putParcelableArrayListExtra("PlantList", (ArrayList<? extends Parcelable>) plantList);
+                        i.putParcelableArrayListExtra("PlantList", (ArrayList<? extends Parcelable>) sortedList);
                         startActivityForResult(i, 1);
                         break;
                     case 2: //Third item
