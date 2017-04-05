@@ -11,8 +11,8 @@ public class Plant implements Parcelable{
     private String plantName;
     private String sciName;
     private String desc;
-    private boolean isEdible;
-    private boolean isVerified;
+    private boolean edible;
+    private boolean verified;
     private Double latitude;
     private Double longitude;
     private String imgurl;
@@ -32,8 +32,8 @@ public class Plant implements Parcelable{
         this.plantName = plantName;
         this.sciName = sciName;
         this.desc = description;
-        this.isEdible = isEdible;
-        this.isVerified = isVerified;
+        this.edible = isEdible;
+        this.verified = isVerified;
         this.latitude = latitude;
         this.longitude = longitude;
         this.imgurl = imgurl;
@@ -54,11 +54,11 @@ public class Plant implements Parcelable{
     }
 
     public void setEdibility(boolean isEdible){
-        this.isEdible = isEdible;
+        this.edible = isEdible;
     }
 
     public void setVerified(boolean isVerified) {
-        this.isVerified = isVerified;
+        this.verified = isVerified;
     }
 
     public void setLatitude(double lat) {
@@ -90,11 +90,11 @@ public class Plant implements Parcelable{
     }
 
     public boolean isEdible(){
-        return isEdible;
+        return edible;
     }
 
     public boolean isVerified() {
-        return isVerified;
+        return verified;
     }
 
     public double getLatitude() {
@@ -115,8 +115,8 @@ public class Plant implements Parcelable{
         plantName = in.readString();
         sciName = in.readString();
         desc = in.readString();
-        isEdible = ( in.readInt() == 1 );
-        isVerified = (in.readInt() == 1);
+        edible = ( in.readInt() == 1 );
+        verified = (in.readInt() == 1);
         latitude = in.readDouble();
         longitude = in.readDouble();
         imgurl = in.readString();
@@ -134,8 +134,8 @@ public class Plant implements Parcelable{
         parcel.writeString(plantName);
         parcel.writeString(sciName);
         parcel.writeString(desc);
-        parcel.writeInt((isEdible) ? 1 : 0);
-        parcel.writeInt((isVerified) ? 1 : 0);
+        parcel.writeInt((edible) ? 1 : 0);
+        parcel.writeInt((verified) ? 1 : 0);
         parcel.writeDouble(latitude == null ? 0 : latitude);
         parcel.writeDouble(longitude == null ? 0 : longitude);
         parcel.writeString(imgurl);
