@@ -7,12 +7,15 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v4.app.NavUtils;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,6 +42,7 @@ public class PlantDescriptionActivity extends AppCompatActivity{
     private Plant plantInfo;
     private TextView plantNameText, sciNameText, descText;
     private ImageView plantImage;
+    private RadioButton edibilityRadioButton;
     private Button addImageButton, findPlantButton;
     private ProgressDialog mProgress;
     private String imageURI;
@@ -54,6 +58,7 @@ public class PlantDescriptionActivity extends AppCompatActivity{
 
         Bundle b = getIntent().getExtras();
         plantInfo = b.getParcelable("Plant Info");
+
         plantDescKey = b.getString("key");
 
         mProgress = new ProgressDialog(this);
@@ -61,15 +66,18 @@ public class PlantDescriptionActivity extends AppCompatActivity{
         // set the view now
         setContentView(R.layout.activity_plant_description);
 
-        plantNameText = (TextView) findViewById(R.id.textView3);
+        plantNameText = (TextView) findViewById(R.id.descPlantName);
         plantNameText.setText(plantInfo.getPlantName());
-        sciNameText = (TextView) findViewById(R.id.textView4);
+        sciNameText = (TextView) findViewById(R.id.descSciName);
         sciNameText.setText(plantInfo.getSciName());
-        descText = (TextView) findViewById(R.id.textView5);
+        descText = (TextView) findViewById(R.id.descDescription);
         descText.setText(plantInfo.getDescription());
-        plantImage = (ImageView) findViewById(R.id.imageView);
-        addImageButton = (Button) findViewById(R.id.button3);
+        plantImage = (ImageView) findViewById(R.id.descImageView);
+        addImageButton = (Button) findViewById(R.id.descAddPhoto);
         findPlantButton = (Button) findViewById(R.id.findPlantButton);
+        edibilityRadioButton = (RadioButton) findViewById(R.id.descEdibilityRadioButton);
+
+        edibilityRadioButton.setChecked(plantInfo.isEdible());
 
         imageURI = plantInfo.getDownloadUrlString();
 
@@ -202,4 +210,6 @@ public class PlantDescriptionActivity extends AppCompatActivity{
             }
         }
     }
+
+
 }

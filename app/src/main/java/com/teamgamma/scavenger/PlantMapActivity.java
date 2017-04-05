@@ -27,6 +27,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -689,17 +690,24 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == 1) { //list return
-            double latitude = data.getIntExtra("latitude", 35);
-            double longitude = data.getIntExtra("longitude", -83);
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(latitude, longitude)));
-        } else if (requestCode == 2) { //plant desc return
-            double latitude = data.getIntExtra("latitude", 33);
-            double longitude = data.getIntExtra("longitude", -83);
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(latitude, longitude)));
+        if (data != null) {
+            if (requestCode == 1) { //list return
+
+                double latitude = data.getDoubleExtra("latitude", 35.00);
+                double longitude = data.getDoubleExtra("longitude", -83.00);
+                mDrawerLayout.closeDrawer(Gravity.LEFT);
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(latitude, longitude)));
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(17));
+
+
+            } else if (requestCode == 2) { //plant desc return
+                double latitude = data.getDoubleExtra("latitude", 33.00);
+                double longitude = data.getDoubleExtra("longitude", -83.00);
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(latitude, longitude)));
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(17));
+            }
         }
     }
-
     private void setupDrawer() {
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
             /** Called when a drawer has settled in a completely open state. */

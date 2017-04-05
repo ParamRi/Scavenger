@@ -3,6 +3,8 @@ package com.teamgamma.scavenger;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -56,7 +58,7 @@ public class PlantListActivity extends Activity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                Toast.makeText(PlantListActivity.this, "You Clicked at " + values[+ position], Toast.LENGTH_SHORT).show();
+                //Toast.makeText(PlantListActivity.this, "You Clicked at " + values[+ position], Toast.LENGTH_SHORT).show();
                 Plant plantInfo = plantList.get(position);
                 if((plantInfo.getLatitude() >= -90 || plantInfo.getLatitude() <= 90)
                         && (plantInfo.getLongitude() >= -180 || plantInfo.getLongitude() <= 180)) {
@@ -69,4 +71,18 @@ public class PlantListActivity extends Activity {
             }
         });
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                finish();
+                //NavUtils.navigateUpFromSameTask(this);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 }
+

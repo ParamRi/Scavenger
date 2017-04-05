@@ -2,57 +2,67 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:weightSum="1">
+    tools:context=".PlantDescriptionActivity"
+    >
 
     <ImageView
+        android:id="@+id/descImageView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/googleg_standard_color_18"
-        android:id="@+id/imageView"
-        android:layout_weight="0.38" />
+        android:layout_height="122dp"
+        android:layout_weight="0.48"
+        app:srcCompat="@drawable/plant_add" />
+
 
     <TextView
         android:text="TextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/textView3"
-        android:layout_weight="0.16"
-        tools:text="Plant Name" />
+        android:id="@+id/descPlantName"
+        tools:text="Plant Name"
+        android:layout_weight="0.13" />
 
     <TextView
         android:text="TextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/textView4"
-        android:layout_weight="0.16"
-        tools:text="Scientific Name" />
+        android:id="@+id/descSciName"
+        tools:text="Scientific Name"
+        android:layout_weight="0.13" />
+
+    <RadioButton
+        android:id="@+id/descEdibilityRadioButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:layout_weight="0.00"
+        android:text="Edibile" />
 
     <TextView
         android:text="TextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/textView5"
-        android:layout_weight="0.30"
-        tools:text="Description" />
+        android:id="@+id/descDescription"
+        tools:text="Description"
+        android:layout_weight="0.42" />
 
     <Button
         android:text="Let's Go"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/findPlantButton"
-        android:layout_weight="0.38" />
-
+        android:layout_height="47dp"
+        android:id="@+id/findPlantButton" />
+    <!--
     <Button
         android:text="View Log"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/button2" />
-
+    -->
     <Button
         android:text="Add Photo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/button3"/>
+        android:id="@+id/descAddPhoto"/>
 </LinearLayout>
