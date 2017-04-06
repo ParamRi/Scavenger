@@ -1,27 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" >
-    <TableRow>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp" >
+
         <ImageView
             android:id="@+id/icon"
             android:layout_width="100dp"
-            android:layout_height="100dp" />
+            android:layout_height="100dp"
+            android:scaleType="centerCrop"
+            android:layout_marginRight="5dp" />
 
         <TextView
             android:id="@+id/plantName"
-            android:layout_width="wrap_content"
+            android:layout_width="200dp"
             android:layout_height="50dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignTop="@id/icon"
+            android:layout_toRightOf="@id/icon"
             android:textSize="18sp"
             android:textStyle="bold"
             android:layout_margin="@dimen/activity_horizontal_margin"/>
 
         <TextView
             android:id="@+id/plantDesc"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="200dp"
+            android:layout_height="50dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignBottom="@id/icon"
+            android:layout_toRightOf="@id/icon"
+            android:maxLines="2"
             android:textSize="12sp"
             android:layout_margin="@dimen/activity_vertical_margin" />
-    </TableRow>
 
-</TableLayout>
+</RelativeLayout>
