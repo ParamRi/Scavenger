@@ -20,7 +20,7 @@
         android:layout_weight="0.04"
         app:srcCompat="@drawable/plant_add" />
 
-    <EditText
+    <AutoCompleteTextView
         android:id="@+id/plantNameText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

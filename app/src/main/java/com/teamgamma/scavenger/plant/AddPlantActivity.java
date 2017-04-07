@@ -13,15 +13,21 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,6 +37,11 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
@@ -40,7 +51,9 @@ import com.teamgamma.scavenger.R;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 public class AddPlantActivity extends AppCompatActivity implements View.OnClickListener, android.location.LocationListener {
     protected LocationManager locationManager;
@@ -53,7 +66,7 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
     private static final float MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; //10 meters
     private double latitude;
     private double longitude;
-    private EditText plantNameText;
+    private AutoCompleteTextView plantNameText;
     private EditText plantSciNameText;
     private EditText plantDescText;
     private ImageView plantImage;
@@ -66,12 +79,58 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
     private ImageView uploadImageView;
     private String downloadUrlString;
     private Uri photoURI;
+    private ProgressBar progressBar;
+    private static final String[] COUNTRIES = new String[] {
+            "Belgium", "France", "Italy", "Germany", "Spain"
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_plant);
         mProgress = new ProgressDialog(this);
+        //mProgress.setCancelable(false);
+        mProgress.setCanceledOnTouchOutside(false);
+        mProgress.setMessage("Getting Plant Suggestions for you. Please Wait :) ");
+        mProgress.show();
+        final ArrayList<String> commonName =  new ArrayList<String>(50000);
+        final HashMap<String, String> commonScientificMap = new HashMap<String, String>(50000);
+        final HashMap<String, String> scientificPalatableMap = new HashMap<String, String>(50000);
+
+        DatabaseReference database = API.getDatabaseReference();
+        database.child("plantName").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                //Basically, this says "For each DataSnapshot *Data* in dataSnapshot, do what's inside the method.
+                //commonName.add("Apple");
+                //commonName.add("Banana");
+
+                for (DataSnapshot suggestionSnapshot : dataSnapshot.getChildren()){
+                    //Get the suggestion by childing the key of the string you want to get.
+                    String plantCommonName = suggestionSnapshot.child("Common Name").getValue(String.class);
+                    String plantScientificName = suggestionSnapshot.child("Scientific Name").getValue(String.class);
+                    String palatableHuman = suggestionSnapshot.child("Palatable Human").getValue(String.class);
+                    //Add the retrieved string to the list
+                    commonName.add(plantCommonName);
+                    commonScientificMap.put(plantCommonName, plantScientificName);
+                    scientificPalatableMap.put(plantScientificName, palatableHuman);
+                    Log.d("Suggestion adeed",plantCommonName);
+                    mProgress.show();
+                }
+
+                mProgress.dismiss();
+
+            }
+
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+
+        });
+
+        setContentView(R.layout.activity_add_plant);
+
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -84,10 +143,22 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
         LatLng plantLocation = getIntent().getExtras().getParcelable("LatLng");
         latitude = plantLocation.latitude;
         longitude = plantLocation.longitude;
-        plantNameText = (EditText) findViewById(R.id.plantNameText);
+        plantNameText = (AutoCompleteTextView) findViewById(R.id.plantNameText);
         plantSciNameText = (EditText) findViewById(R.id.sciNameText);
         plantDescText = (EditText) findViewById(R.id.descriptionTextEditor);
         uploadImageView = (ImageView) findViewById(R.id.plantImageView);
+
+
+        //Create a new ArrayAdapter with your context and the simple layout for the dropdown menu provided by Android
+        //final ArrayAdapter<String> autoComplete = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1, COUNTRIES);
+        //Child the root before all the push() keys are found and add a ValueEventListener()
+
+
+
+        final ArrayAdapter<String> autoComplete = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1, commonName);
+        plantNameText.setAdapter(autoComplete);
+        plantNameText.setThreshold(1);
+
 
         plantNameText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 
@@ -144,7 +215,32 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
             }
 
         });
+
+        plantNameText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                String commonPlantName = (String)adapterView.getItemAtPosition(position);
+                String scientificPlantName = commonScientificMap.get(commonPlantName);
+
+                String humanPalatability = scientificPalatableMap.get(scientificPlantName);
+                Boolean edibilityCheckBoxValue = false;
+                if(humanPalatability.equalsIgnoreCase("yes")){
+                    edibilityCheckBoxValue = true;
+                }
+                plantNameText.setText(commonPlantName);
+                plantSciNameText.setText(scientificPlantName);
+                edibilityCheckBox.setChecked(edibilityCheckBoxValue);
+                InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                if(in != null) {
+                    in.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
+                }
+
+            }
+        });
+
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
