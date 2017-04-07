@@ -48,8 +48,13 @@ import com.squareup.picasso.Picasso;
 import com.teamgamma.scavenger.API.API;
 import com.teamgamma.scavenger.R;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -91,11 +96,34 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
         //mProgress.setCancelable(false);
         mProgress.setCanceledOnTouchOutside(false);
         mProgress.setMessage("Getting Plant Suggestions for you. Please Wait :) ");
-        mProgress.show();
+        //mProgress.show();
         final ArrayList<String> commonName =  new ArrayList<String>(50000);
         final HashMap<String, String> commonScientificMap = new HashMap<String, String>(50000);
         final HashMap<String, String> scientificPalatableMap = new HashMap<String, String>(50000);
 
+        try {
+            JSONObject obj = new JSONObject(loadJSONFromAsset());
+            JSONArray m_jArry = obj.getJSONArray("plantName");
+            //ArrayList<HashMap<String, String>> formList = new ArrayList<HashMap<String, String>>();
+            //HashMap<String, String> m_li;
+
+            for (int i = 0; i < m_jArry.length(); i++) {
+                JSONObject jo_inside = m_jArry.getJSONObject(i);
+                Log.d("Details-->", jo_inside.getString("Common Name"));
+                String plantCommonName = jo_inside.getString("Common Name");
+                String plantScientificName = jo_inside.getString("Scientific Name");
+                String palatableHuman = jo_inside.getString("Palatable Human");
+
+                commonName.add(plantCommonName);
+                commonScientificMap.put(plantCommonName, plantScientificName);
+                scientificPalatableMap.put(plantScientificName, palatableHuman);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        /*
         DatabaseReference database = API.getDatabaseReference();
         database.child("plantName").addValueEventListener(new ValueEventListener() {
             @Override
@@ -128,7 +156,7 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
             }
 
         });
-
+*/
         setContentView(R.layout.activity_add_plant);
 
 
@@ -238,6 +266,31 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
 
             }
         });
+
+    }
+
+    public String loadJSONFromAsset() {
+        String json = null;
+        try {
+
+            InputStream is = getAssets().open("PlantNameData.json");
+
+            int size = is.available();
+
+            byte[] buffer = new byte[size];
+
+            is.read(buffer);
+
+            is.close();
+
+            json = new String(buffer, "UTF-8");
+
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        return json;
 
     }
 
