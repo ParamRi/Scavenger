@@ -79,6 +79,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+
 
 public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
@@ -136,6 +140,13 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
         rotate_backward = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.rotate_backward);
         addDrawerItems();
         setupDrawer();
+
+        //initialize add and set up ad view
+        MobileAds.initialize(getApplicationContext(), "ca-app-pub-1206729102967700/5768798878");
+
+        AdView mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
 
         //set up hashMap of Markers
         hashMarkers = new HashMap<String, Marker>();
