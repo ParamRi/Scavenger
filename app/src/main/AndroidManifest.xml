@@ -39,7 +39,8 @@
 
         <activity
             android:name=".PlantMapActivity"
-            android:label="@string/title_activity_plant_map">
+            android:label="@string/title_activity_plant_map"
+            android:theme="@style/MyTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
