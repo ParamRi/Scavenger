@@ -675,7 +675,7 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
 
     private void addDrawerItems() {
 
-        String[] menuArray = { "Map View", "List View", "SignIn", "SignUp", "Sign Out", "Manage Account" };
+        String[] menuArray = { "List View", "SignIn", "SignUp", "Sign Out", "Manage Account" };
         mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, menuArray);
         mDrawerList.setAdapter(mAdapter);
 
@@ -683,28 +683,28 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
+                    //case 0:
+                        //Toast.makeText(PlantMapActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
+                    //   break;
                     case 0:
-                        Toast.makeText(PlantMapActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
-                        break;
-                    case 1:
                         CameraPosition cameraPosition = mMap.getCameraPosition();
                         ArrayList<Plant> sortedList = new ProximitySorter(plantList, cameraPosition.target).sortByDistance();
                         Intent i = new Intent(PlantMapActivity.this, PlantListActivity.class);
                         i.putParcelableArrayListExtra("PlantList", (ArrayList<? extends Parcelable>) sortedList);
                         startActivityForResult(i, 1);
                         break;
-                    case 2: //Third item
+                    case 1: //Third item
                         startActivity(new Intent(PlantMapActivity.this, LoginActivity.class));
                         //finish();
                         break;
-                    case 3: //Fourth item
+                    case 2: //Fourth item
                         startActivity(new Intent(PlantMapActivity.this, SignupActivity.class));
                         break;
                     //Toast.makeText(PlantMapActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
-                    case 4:
+                    case 3:
                         signOut();
                         break;
-                    case 5:
+                    case 4:
                         startActivity(new Intent(PlantMapActivity.this, ManageAccountActivity.class));
                         break;
                 }
