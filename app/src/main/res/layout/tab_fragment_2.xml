@@ -20,4 +20,18 @@
 
         />
 
+    <ImageView
+        android:id="@+id/geo_autocomplete_clear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_close_light"
+        android:contentDescription="@string/map_list_header_txt"
+        android:layout_gravity="center_vertical|end"
+        android:visibility="gone"
+        android:layout_toRightOf="@id/geo_autocomplete"
+        android:layout_alignParentRight="true"
+
+        />
+
+
 </RelativeLayout>

@@ -1,15 +1,26 @@
 package com.teamgamma.scavenger;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.teamgamma.scavenger.plant.Plant;
+
+
 public class TabFragment2 extends Fragment {
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.tab_fragment_2, container, false);
+        Intent intent = new Intent(getActivity(), PlantListActivity.class);
+        startActivity(intent);
+
+
+        return null;
     }
+
+
 }
