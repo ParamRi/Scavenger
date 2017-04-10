@@ -49,7 +49,7 @@ public class Plant implements Parcelable{
         this.sciName = sciName;
     }
 
-    public void setDescription(String description) {
+    public void setDesc(String description) {
         this.desc = description;
     }
 
@@ -69,7 +69,7 @@ public class Plant implements Parcelable{
         this.longitude = longitude;
     }
 
-    public void setDownloadUrlString(String imgurl) {
+    public void setImgurl(String imgurl) {
         this.imgurl = imgurl;
     }
 
@@ -85,7 +85,7 @@ public class Plant implements Parcelable{
         return sciName;
     }
 
-    public String getDescription() {
+    public String getDesc() {
         return desc;
     }
 
@@ -105,7 +105,7 @@ public class Plant implements Parcelable{
         return longitude;
     }
 
-    public String getDownloadUrlString() { return imgurl; }
+    public String getImgurl() { return imgurl; }
 
     public String getUserId() {
         return userId;
