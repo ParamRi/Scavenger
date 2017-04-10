@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.teamgamma.scavenger.DelayAutoCompleteTextView
+        android:id="@+id/geo_autocomplete"
+        android:paddingTop="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:imeOptions="flagNoExtractUi|actionSearch"
+        android:inputType="textCapSentences"
+        android:textColor="@color/grey_100"
+        android:background="@color/white"
+        android:hint="@string/map_geo_search_input_hint"
+        android:layout_gravity="center_vertical"
+        android:dropDownWidth="fill_parent"
+        android:layout_alignParentLeft="true"
+
+        />
+
+</RelativeLayout>
