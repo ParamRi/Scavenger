@@ -7,7 +7,6 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -30,6 +29,8 @@ import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
@@ -64,6 +65,7 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
     private ProgressDialog mProgress;
     private ImageView uploadImageView;
     private String downloadUrlString;
+    private Uri photoURI;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,44 +80,16 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         gps_enabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         network_enabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-/*
-        if (gps_enabled) {
-            if (location == null) {
-                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
-                    return;
-                }
-                locationManager.requestLocationUpdates(
-                        LocationManager.GPS_PROVIDER,
-                        MIN_TIME_BW_UPDATES,
-                        MIN_DISTANCE_CHANGE_FOR_UPDATES, (android.location.LocationListener) this);
-                Log.d("activity", "RLOC: GPS Enabled");
-                if (locationManager != null) {
-                    location = locationManager
-                            .getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                    if (location != null) {
-                        Log.d("activity", "RLOC: loc by GPS");
 
-                        latitude = location.getLatitude();
-                        longitude = location.getLongitude();
-                    }
-                }
-            }
-        }
-        */
         LatLng plantLocation = getIntent().getExtras().getParcelable("LatLng");
         latitude = plantLocation.latitude;
         longitude = plantLocation.longitude;
         plantNameText = (EditText) findViewById(R.id.plantNameText);
         plantSciNameText = (EditText) findViewById(R.id.sciNameText);
         plantDescText = (EditText) findViewById(R.id.descriptionTextEditor);
-        //uploadImageView = (ImageView) findViewById(R.id.imageView3);
+
+        uploadImageView = (ImageView) findViewById(R.id.plantImageView);
+
 
         plantNameText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 
@@ -162,52 +136,36 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
         addImageButton.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View view) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     dispatchTakePictureIntent();
-                }
-                    else{
-                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    startActivityForResult(intent, CAMERA_REQUEST_CODE);
-                    }
-
-
-
+                //}
+                   //else{
+                    //Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    //startActivityForResult(intent, CAMERA_REQUEST_CODE);
+                   //}
             }
 
         });
-
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        /*
-        if (requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            uploadImageView.setImageBitmap(imageBitmap);
-        }
-        */
-        if (requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK) {
 
-            mProgress.setMessage("Uploading Image...");
+        if (requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK) {
+            mProgress.setMessage("Uploading...");
             mProgress.show();
-            Uri uri = data.getData();
-
-            StorageReference filepath = API.getStorageReference().child("Photos").child(uri.getLastPathSegment());
-            filepath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            //Uri uri = data.getData();
+            galleryAddPic();
+            StorageReference filepath = API.getStorageReference().child("Photos").child(photoURI.getLastPathSegment());
+            filepath.putFile(photoURI).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    mProgress.dismiss();
-
                     Toast.makeText(AddPlantActivity.this, "Upload Successful!", Toast.LENGTH_SHORT).show();
-
+                    mProgress.dismiss();
                     @SuppressWarnings("VisibleForTests") Uri downloadUrl_temp = taskSnapshot.getDownloadUrl();
                     downloadUrlString = downloadUrl_temp.toString();
-                    Picasso.with(AddPlantActivity.this).load(downloadUrl_temp).fit().centerCrop().into(uploadImageView);
-
-
+                    Picasso.with(AddPlantActivity.this).load(downloadUrl_temp).fit().centerCrop().rotate(90).into(uploadImageView);
 
                 }
             }).addOnFailureListener(new OnFailureListener() {
@@ -223,20 +181,35 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
      * addPlant() builds and uploads a plant object onto the database
      */
     public void addPlant(View view) {
-        createPlant = new Plant(plantNameText.getText().toString(), plantSciNameText.getText().toString(),
-                plantDescText.getText().toString(),
-                edibilityCheckBox.isChecked(), false, new LatLng(latitude, longitude), downloadUrlString);
-        String plantId = API.getDatabaseReference().child("plants").push().getKey();
-        API.getDatabaseReference().child("plants").child(plantId).setValue(createPlant);
-        API.getGeoFire().setLocation(plantId, new GeoLocation(latitude, longitude));
-        System.out.println("added plant");
-        //DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-        //mDatabase.child("plants_with_image").push().setValue(createPlant);
-        //System.out.println("added plant");
-        Toast.makeText(AddPlantActivity.this, "Plant has been added into the databse", Toast.LENGTH_SHORT).show();
-        finish();
-    }
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            if (plantNameText.getText().length() == 0) {
+                Toast.makeText(AddPlantActivity.this, "Plant Name field cannot be empty", Toast.LENGTH_SHORT).show();
 
+            } else if (plantDescText.getText().length() == 0) {
+                Toast.makeText(AddPlantActivity.this, "Plant Description field cannot be empty", Toast.LENGTH_SHORT).show();
+
+            } else {
+                createPlant = new Plant(plantNameText.getText().toString(), plantSciNameText.getText().toString(),
+                        plantDescText.getText().toString(),
+                        edibilityCheckBox.isChecked(), false, latitude, longitude,
+                        downloadUrlString, user.getUid());
+                String plantId = API.getDatabaseReference().child("plants").push().getKey();
+                API.getDatabaseReference().child("plants").child(plantId).setValue(createPlant);
+                API.getGeoFire().setLocation(plantId, new GeoLocation(latitude, longitude));
+                System.out.println("added plant");
+                //DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+                //mDatabase.child("plants_with_image").push().setValue(createPlant);
+                //System.out.println("added plant");
+                Toast.makeText(AddPlantActivity.this, "Plant has been added into the databse", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        }
+        else{
+            Toast.makeText(AddPlantActivity.this, "You need to be Logged in to add a plant", Toast.LENGTH_SHORT).show();
+
+        }
+    }
     @Override
     public void onLocationChanged(Location location) {
 
@@ -279,7 +252,7 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
     }
 
     String mCurrentPhotoPath;
-    Uri photoUri;
+
 
     private File createImageFile() throws IOException {
 // Create an image file name
@@ -297,8 +270,26 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
         return image;
 
     }
+/*
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            uploadImageView.setImageBitmap(imageBitmap);
+            galleryAddPic();
+        }
+    }
+*/
+    private void galleryAddPic() {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        File f = new File(mCurrentPhotoPath);
+        Uri contentUri = Uri.fromFile(f);
+        mediaScanIntent.setData(contentUri);
+        this.sendBroadcast(mediaScanIntent);
+    }
 
-    static final int REQUEST_TAKE_PHOTO = 1;
+
 
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -314,11 +305,11 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(this,
+                photoURI = FileProvider.getUriForFile(this,
                         "com.example.android.fileprovider",
                         photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+                startActivityForResult(takePictureIntent, CAMERA_REQUEST_CODE);
             }
         }
     }

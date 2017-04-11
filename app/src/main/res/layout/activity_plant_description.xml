@@ -2,46 +2,61 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:weightSum="1">
+    tools:context=".PlantDescriptionActivity"
+    >
 
     <ImageView
+
         android:layout_marginTop="5dp"
+        android:id="@+id/descImageView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/googleg_standard_color_18"
-        android:id="@+id/imageView"
-        android:layout_weight="0.38" />
+        android:layout_height="122dp"
+        android:layout_weight="0.48"
+        app:srcCompat="@drawable/plant_add" />
+
 
     <TextView
         android:layout_marginTop="5dp"
         android:text="TextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/textView3"
+
+        android:id="@+id/descPlantName"
         android:layout_weight="0.10"
         android:textSize="22dp"
         android:textColor="#A9A9A9"
         android:textStyle="bold"
         tools:text="Plant Name" />
 
+
     <TextView
         android:text="TextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/textView4"
+        android:id="@+id/descSciName"
         android:layout_weight="0.12"
         android:textSize="18dp"
         android:textColor="#A9A9A9"
         android:textStyle="italic"
         tools:text="Scientific Name" />
 
+
+    <RadioButton
+        android:id="@+id/descEdibilityRadioButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:layout_weight="0.00"
+        android:text="Edibile" />
+
     <TextView
         android:text="TextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/textView5"
+        android:id="@+id/descDescription"
         android:layout_weight="0.40"
         android:textColor="#A9A9A9"
         tools:text="Description" />
@@ -55,18 +70,9 @@
         android:background="@drawable/button_rounded_accent_color"
         android:textColor="@android:color/white"
         android:text="Let's Go"
-        android:id="@+id/button4"
+        android:id="@+id/findPlantButton"
         android:layout_weight="0.30" />
 
-    <Button
-        android:layout_marginBottom="5dp"
-        android:text="View Log"
-        android:layout_width="200dip"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:background="@drawable/button_rounded_accent_color"
-        android:textColor="@android:color/white"
-        android:id="@+id/button2" />
 
     <Button
         android:layout_marginBottom="5dp"
@@ -76,5 +82,6 @@
         android:layout_gravity="center"
         android:background="@drawable/button_rounded_accent_color"
         android:textColor="@android:color/white"
-        android:id="@+id/button3" />
+        android:id="@+id/descAddPhoto" />
+
 </LinearLayout>
