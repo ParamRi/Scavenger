@@ -71,7 +71,7 @@ public class PlantDescriptionActivity extends AppCompatActivity{
         sciNameText = (TextView) findViewById(R.id.descSciName);
         sciNameText.setText(plantInfo.getSciName());
         descText = (TextView) findViewById(R.id.descDescription);
-        descText.setText(plantInfo.getDescription());
+        descText.setText(plantInfo.getDesc());
         plantImage = (ImageView) findViewById(R.id.descImageView);
         addImageButton = (Button) findViewById(R.id.descAddPhoto);
         findPlantButton = (Button) findViewById(R.id.findPlantButton);
@@ -79,7 +79,7 @@ public class PlantDescriptionActivity extends AppCompatActivity{
 
         edibilityRadioButton.setChecked(plantInfo.isEdible());
 
-        imageURI = plantInfo.getDownloadUrlString();
+        imageURI = plantInfo.getImgurl();
 
         addImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -165,7 +165,7 @@ public class PlantDescriptionActivity extends AppCompatActivity{
                     mProgress.dismiss();
                     @SuppressWarnings("VisibleForTests") Uri downloadUrl_temp = taskSnapshot.getDownloadUrl();
                     downloadUrlString = downloadUrl_temp.toString();
-                    plantInfo.setDownloadUrlString(downloadUrlString);
+                    plantInfo.setImgurl(downloadUrlString);
                     Picasso.with(PlantDescriptionActivity.this).load(downloadUrl_temp).fit().centerCrop().into(plantImage);
                     //update plant;
                     API.getDatabaseReference().child("plants").child(plantDescKey).setValue(plantInfo);

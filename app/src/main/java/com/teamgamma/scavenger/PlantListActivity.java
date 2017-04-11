@@ -44,9 +44,9 @@ public class PlantListActivity extends Activity {
             } else {
                 values[i] = "no name available";
             }
-            descList[i] = aPlant.getDescription();
-            if(plantList.get(i).getDownloadUrlString() != null) {
-                images[i] = plantList.get(i).getDownloadUrlString();
+            descList[i] = aPlant.getDesc();
+            if(plantList.get(i).getImgurl() != null) {
+                images[i] = plantList.get(i).getImgurl();
             }
         }
         PlantList adapter = new PlantList(PlantListActivity.this,

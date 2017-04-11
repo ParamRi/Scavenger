@@ -216,7 +216,8 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
         setupDrawer();
 
         //initialize add and set up ad view
-        MobileAds.initialize(getApplicationContext(), "ca-app-pub-1206729102967700/5768798878");
+        //MobileAds.initialize(getApplicationContext(), "ca-app-pub-1206729102967700/5768798878");
+        MobileAds.initialize(getApplicationContext(), "ca-app-pub-3940256099942544~3347511713");
 
         AdView mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
