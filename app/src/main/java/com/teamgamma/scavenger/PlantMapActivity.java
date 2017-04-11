@@ -141,9 +141,11 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
         setSupportActionBar(toolbar);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        tabLayout.addTab(tabLayout.newTab().setText("Tab 1"));
-        tabLayout.addTab(tabLayout.newTab().setText("Tab 2"));
+        tabLayout.addTab(tabLayout.newTab().setText("Map View"));
+        tabLayout.addTab(tabLayout.newTab().setText("List View"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+
+
 
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         final PagerAdapter adapter = new PagerAdapter
