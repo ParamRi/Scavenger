@@ -178,8 +178,7 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
         uploadImageView = (ImageView) findViewById(R.id.plantImageView);
 
 
-<<<<<<< HEAD
-=======
+
         //Create a new ArrayAdapter with your context and the simple layout for the dropdown menu provided by Android
         //final ArrayAdapter<String> autoComplete = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1, COUNTRIES);
         //Child the root before all the push() keys are found and add a ValueEventListener()
@@ -191,7 +190,7 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
         plantNameText.setThreshold(1);
 
 
->>>>>>> param
+
         plantNameText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 
             @Override
