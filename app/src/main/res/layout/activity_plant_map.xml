@@ -57,11 +57,12 @@
         <com.teamgamma.scavenger.DelayAutoCompleteTextView
             android:id="@+id/geo_autocomplete"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_height="40dp"
             android:imeOptions="flagNoExtractUi|actionSearch"
             android:inputType="textCapSentences"
             android:textColor="#A9A9A9"
             android:textSize="20dp"
+            android:layout_marginTop="5dip"
             android:background="@color/white"
             android:hint="@string/map_geo_search_input_hint"
             android:layout_gravity="bottom|end"
