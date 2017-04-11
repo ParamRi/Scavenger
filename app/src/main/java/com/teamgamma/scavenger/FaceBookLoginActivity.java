@@ -44,15 +44,15 @@ public class FaceBookLoginActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(this.getApplicationContext());
-        setContentView(R.layout.activity_fb_login);
+        setContentView(R.layout.activity_login);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setTitle("Facebook Login");
+        getSupportActionBar().setTitle("Sign In");
 
         callbackManager = CallbackManager.Factory.create();
 
-        loginButton = (LoginButton) findViewById(R.id.login_button);
+        loginButton = (LoginButton) findViewById(R.id.fb_login_button);
         info = (TextView)findViewById(R.id.fb_login_info);
 
         loginButton.setReadPermissions(Arrays.asList("email"));

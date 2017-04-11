@@ -21,7 +21,7 @@
             android:layout_height="@dimen/logo_w_h"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="30dp"
-            android:src="@mipmap/ic_launcher" />
+            android:src="@drawable/transparent" />
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
@@ -61,8 +61,18 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dip"
             android:background="@drawable/button_rounded"
-            android:text="@string/btn_login"
+            android:text="Sign In"
             android:textColor="@android:color/black" />
+
+        <Button
+            android:id="@+id/btn_signup"
+            android:layout_width="200dip"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dip"
+            android:background="@drawable/button_rounded"
+            android:text="Sign Up"
+            android:textColor="@android:color/black"
+             />
 
         <Button
             android:id="@+id/btn_reset_password"
@@ -77,27 +87,23 @@
 
         <!-- Link to Signup Screen -->
 
-        <Button
-            android:id="@+id/btn_signup"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dip"
-            android:background="@null"
-            android:text="@string/btn_link_to_register"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="15dp" />
 
-        <Button
-            android:id="@+id/btn_fb_login"
-            android:layout_width="fill_parent"
+
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dip"
-            android:background="@null"
-            android:text="@string/btn_fb_login"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="15dp" />
+            android:id="@+id/fb_login_info"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:textSize="18sp"
+            />
+
+        <com.facebook.login.widget.LoginButton
+            android:id="@+id/fb_login_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            />
 
 
 

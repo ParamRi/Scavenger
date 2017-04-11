@@ -115,7 +115,7 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
         plantNameText = (EditText) findViewById(R.id.plantNameText);
         plantSciNameText = (EditText) findViewById(R.id.sciNameText);
         plantDescText = (EditText) findViewById(R.id.descriptionTextEditor);
-        uploadImageView = (ImageView) findViewById(R.id.imageView3);
+        //uploadImageView = (ImageView) findViewById(R.id.imageView3);
 
         plantNameText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 

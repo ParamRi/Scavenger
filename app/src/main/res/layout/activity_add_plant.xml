@@ -19,25 +19,31 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
+        android:backgroundTint="#00AF97"
         android:inputType="textPersonName"
         android:hint="Plant Name"
-        android:imeOptions="actionDone"/>
+        android:imeOptions="actionDone"
+        android:textSize="20dip"/>
 
     <EditText
         android:id="@+id/sciNameText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
+        android:backgroundTint="#00AF97"
         android:inputType="textPersonName"
         android:hint="Scientific Name"
-        android:imeOptions="actionDone"/>
+        android:imeOptions="actionDone"
+        android:textSize="20dip"/>
 
     <CheckBox
         android:id="@+id/checkBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:backgroundTint="#00AF97"
         android:layout_weight="0.01"
-        android:text="Edibile" />
+        android:text="Edibile"
+        android:textSize="20dip"/>
 
     <EditText
         android:id="@+id/descriptionTextEditor"
@@ -46,36 +52,35 @@
         android:layout_weight="0.01"
         android:ems="10"
         android:inputType="textMultiLine"
+        android:backgroundTint="#00AF97"
         android:hint="Add Description"
-        android:imeOptions="actionDone"/>
-    <LinearLayout
-        android:id="@+id/linearLayout1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:weightSum="1">
+        android:imeOptions="actionDone"
+        android:textSize="20dip"/>
+
 
         <Button
             android:id="@+id/addImageButton"
-            android:layout_width="wrap_content"
-            android:layout_height="41dp"
+            android:layout_marginBottom="15dp"
+            android:layout_width="200dip"
+            android:layout_gravity="center"
+            android:background="@drawable/button_rounded_accent_color"
+            android:layout_height="40dp"
             android:text="Add Photo"
-            android:layout_weight="0.92" />
-
-        <ImageView
-        android:id="@+id/imageView3"
-        android:layout_width="149dp"
-        android:layout_height="47dp"
-        app:srcCompat="@drawable/plant_add_small" />
+            android:textColor="@color/white"
+             />
 
 
-    </LinearLayout>
 
     <Button
         android:id="@+id/addPlantButton"
-        android:layout_width="match_parent"
+        android:layout_marginBottom="30dp"
+        android:layout_width="200dip"
         android:layout_height="40dp"
         android:onClick="addPlant"
-        android:text="Submit" />
+        android:background="@drawable/button_rounded_accent_color"
+        android:layout_gravity="center"
+        android:text="Submit"
+        android:textColor="@color/white"/>
 
 
 </LinearLayout>

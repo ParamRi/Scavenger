@@ -13,14 +13,7 @@ import com.teamgamma.scavenger.plant.Plant;
 public class TabFragment2 extends Fragment {
 
 
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Intent intent = new Intent(getActivity(), PlantListActivity.class);
-        startActivity(intent);
-
-
-        return null;
+        return inflater.inflate(R.layout.tab_fragment_2, container, false);
     }
-
-
 }
