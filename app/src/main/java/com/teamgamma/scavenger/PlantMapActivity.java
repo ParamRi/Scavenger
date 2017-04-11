@@ -72,6 +72,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.teamgamma.scavenger.API.API;
@@ -140,6 +141,15 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
     FirebaseUser user;
     private String plantDescKey;
 
+    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
+    public static final int MY_PERMISSIONS_REQUEST_INTERNET = 200;
+    private static final int MY_PERMISSIONS_REQUEST_CAMERA = 1888;
+    private static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1889;
+
+    private ArrayList<String> commonNameSuggestions =  new ArrayList<String>();
+
+    private Boolean backButtonFlag = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -147,6 +157,16 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         final Geocoder geocoder = new Geocoder(this);
         FacebookSdk.sdkInitialize(this.getApplicationContext());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+            checkLocationPermission();
+            checkInternetPermission();
+            checkWriteExternalStoragePermission();
+            checkCameraPermission();
+            }
+
+
+
         setContentView(R.layout.activity_plant_map);
 
         //set up tab view
@@ -374,6 +394,7 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
                 LatLng camLocation = cameraPosition.target;
                 Intent i = new  Intent(PlantMapActivity.this, AddPlantActivity.class);
                 i.putExtra("LatLng",camLocation);
+
                 startActivity(i);
                 animateFAB();
             }
@@ -837,10 +858,7 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
         }
     }
 
-    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
-    public static final int MY_PERMISSIONS_REQUEST_INTERNET = 200;
-    private static final int MY_PERMISSIONS_REQUEST_CAMERA = 1888;
-    private static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1889;
+
 
     public boolean checkLocationPermission(){
         if (ContextCompat.checkSelfPermission(this,
@@ -895,7 +913,7 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
                 // this thread waiting for the user's response! After the user
                 // sees the explanation, try again to request the permission.
                 new AlertDialog.Builder(PlantMapActivity.this)
-                        .setMessage("To show the location the permission is needed")
+                        .setMessage("To show the the write external permission is needed")
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
