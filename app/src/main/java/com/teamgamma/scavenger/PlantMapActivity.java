@@ -705,7 +705,7 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
 
     private void addDrawerItems() {
 
-        String[] menuArray = { "Map View", "List View", "SignIn", "SignUp", "Sign Out", "Manage Account" };
+        String[] menuArray = { "Map View", "List View", "SignIn", "Sign Out", "Manage Account" };
         mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, menuArray);
         mDrawerList.setAdapter(mAdapter);
 
@@ -727,14 +727,11 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
                         startActivity(new Intent(PlantMapActivity.this, LoginActivity.class));
                         //finish();
                         break;
-                    case 3: //Fourth item
-                        startActivity(new Intent(PlantMapActivity.this, SignupActivity.class));
-                        break;
-                    //Toast.makeText(PlantMapActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
-                    case 4:
+
+                    case 3:
                         signOut();
                         break;
-                    case 5:
+                    case 4:
                         startActivity(new Intent(PlantMapActivity.this, ManageAccountActivity.class));
                         break;
                 }
