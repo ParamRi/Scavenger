@@ -38,8 +38,8 @@
         android:layout_height="wrap_content"
         android:id="@+id/descSciName"
         android:layout_weight="0.12"
-        android:textSize="18dp"
-        android:textColor="#A9A9A9"
+        android:textSize="16dp"
+        android:textColor="@color/colorFAB"
         android:textStyle="italic"
         tools:text="Scientific Name" />
 
@@ -71,7 +71,7 @@
         android:textColor="@android:color/white"
         android:text="Let's Go"
         android:id="@+id/findPlantButton"
-        android:layout_weight="0.30" />
+         />
 
 
     <Button

@@ -4,34 +4,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.teamgamma.scavenger.DelayAutoCompleteTextView
-        android:id="@+id/geo_autocomplete"
-        android:paddingTop="5dp"
-        android:layout_width="match_parent"
-        android:layout_height="20dp"
-        android:imeOptions="flagNoExtractUi|actionSearch"
-        android:inputType="textCapSentences"
-        android:textColor="@color/grey_100"
-        android:background="@color/white"
-        android:hint="@string/map_geo_search_input_hint"
-        android:layout_gravity="center_vertical"
-        android:dropDownWidth="fill_parent"
-        android:layout_alignParentLeft="true"
-
-        />
-
-    <ImageView
-        android:id="@+id/geo_autocomplete_clear"
+    <TextView
+        android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_close_light"
-        android:contentDescription="@string/map_list_header_txt"
-        android:layout_gravity="center_vertical|end"
-        android:visibility="gone"
-        android:layout_toRightOf="@id/geo_autocomplete"
-        android:layout_alignParentRight="true"
-
-        />
-
+        android:layout_centerInParent="true"
+        android:text="Tab 3"
+        android:textAppearance="?android:attr/textAppearanceLarge"/>
 
 </RelativeLayout>
