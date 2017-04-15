@@ -58,13 +58,20 @@
         android:id="@+id/linearLayout1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:weightSum="1">
+        android:weightSum="1"
+        android:orientation="vertical">
 
         <Button
             android:id="@+id/addImageButton"
             android:layout_width="match_parent"
             android:layout_height="41dp"
-            android:text="Add Photo" />
+            android:text="Capture Plant Pic" />
+
+        <Button
+            android:id="@+id/uploadImageButton"
+            android:layout_width="match_parent"
+            android:layout_height="41dp"
+            android:text="Select Pic from Gallery" />
 
 
     </LinearLayout>
