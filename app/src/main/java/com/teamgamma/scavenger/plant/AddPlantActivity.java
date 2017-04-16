@@ -88,6 +88,7 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
     private String downloadUrlString;
     private Uri photoURI;
     private ProgressBar progressBar;
+    private boolean jsonLoadedFlag = false;
 
 
     @Override
@@ -119,6 +120,8 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
                 commonScientificMap.put(plantCommonName, plantScientificName);
                 scientificPalatableMap.put(plantScientificName, palatableHuman);
             }
+            jsonLoadedFlag = true;
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -176,7 +179,6 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
         plantSciNameText = (EditText) findViewById(R.id.sciNameText);
         plantDescText = (EditText) findViewById(R.id.descriptionTextEditor);
         uploadImageView = (ImageView) findViewById(R.id.plantImageView);
-
 
 
         //Create a new ArrayAdapter with your context and the simple layout for the dropdown menu provided by Android
@@ -279,6 +281,11 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
 
             }
         });
+
+        if(jsonLoadedFlag) {
+            plantSciNameText.setEnabled(false);
+            edibilityCheckBox.setEnabled(false);
+        }
 
     }
 
@@ -407,7 +414,11 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
             if (plantNameText.getText().length() == 0) {
                 Toast.makeText(AddPlantActivity.this, "Plant Name field cannot be empty", Toast.LENGTH_SHORT).show();
 
-            } else if (plantDescText.getText().length() == 0) {
+            }
+            else if(plantSciNameText.getText().length() == 0){
+                Toast.makeText(AddPlantActivity.this, "Scientific Name empty, Please select a common name from the suggestions only", Toast.LENGTH_SHORT).show();
+            }
+            else if (plantDescText.getText().length() == 0) {
                 Toast.makeText(AddPlantActivity.this, "Plant Description field cannot be empty", Toast.LENGTH_SHORT).show();
 
             } else {
