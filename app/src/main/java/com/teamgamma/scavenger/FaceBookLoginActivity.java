@@ -44,7 +44,7 @@ public class FaceBookLoginActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(this.getApplicationContext());
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_fb_login);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -60,7 +60,7 @@ public class FaceBookLoginActivity extends AppCompatActivity{
             @Override
             public void onSuccess(LoginResult loginResult) {
                 handleFacebookAccessToken(loginResult.getAccessToken());
-                Toast.makeText(getApplicationContext(),"SUCCESS",Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(),"SUCCESS",Toast.LENGTH_SHORT).show();
                 goMainScreen();
             }
 

@@ -24,12 +24,25 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
+import android.widget.TextView;
+import android.widget.Toast;
+
+
 public class LoginActivity extends AppCompatActivity {
 
     private EditText inputEmail, inputPassword;
     private FirebaseAuth auth;
     private ProgressBar progressBar;
     private Button btnSignup, btnLogin, btnReset, btnFBLogin;
+
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,15 +76,20 @@ public class LoginActivity extends AppCompatActivity {
 
 
 
+
+
+
+
         //Get Firebase auth instance
         auth = FirebaseAuth.getInstance();
 
-        /*btnFBLogin.setOnClickListener(new View.OnClickListener() {
+        btnFBLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(LoginActivity.this, FaceBookLoginActivity.class));
             }
-        });*/
+        });
+
 
         btnSignup.setOnClickListener(new View.OnClickListener() {
                 @Override
