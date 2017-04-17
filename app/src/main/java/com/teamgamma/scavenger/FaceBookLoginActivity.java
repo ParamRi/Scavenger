@@ -60,6 +60,7 @@ public class FaceBookLoginActivity extends AppCompatActivity{
             @Override
             public void onSuccess(LoginResult loginResult) {
                 handleFacebookAccessToken(loginResult.getAccessToken());
+                Toast.makeText(getApplicationContext(),"SUCCESS",Toast.LENGTH_SHORT).show();
                 goMainScreen();
             }
 
@@ -103,6 +104,7 @@ public class FaceBookLoginActivity extends AppCompatActivity{
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode,resultCode,data);
     }
+
 
     @Override
     protected void onStart() {
