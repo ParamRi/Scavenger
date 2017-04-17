@@ -76,7 +76,6 @@
             android:textColor="@color/white"
              />
 
-
     <Button
         android:id="@+id/addPlantButton"
         android:layout_marginBottom="30dp"
