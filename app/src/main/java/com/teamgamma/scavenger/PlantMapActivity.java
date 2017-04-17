@@ -374,7 +374,6 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(20));
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 if (user != null) {
                       image_marker_pin.setVisibility(View.VISIBLE);
@@ -389,24 +388,16 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
         fab2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                float zoom = mMap.getCameraPosition().zoom;
-                if(zoom < 19){
-                    Toast.makeText(PlantMapActivity.this, "Please Zoom further before adding plant!", Toast.LENGTH_SHORT).show();
-                }
-                else {
+                Snackbar.make(view, "Add Plant Details", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+                image_marker_pin.setVisibility(View.GONE);
+                CameraPosition cameraPosition = mMap.getCameraPosition();
+                LatLng camLocation = cameraPosition.target;
+                Intent i = new  Intent(PlantMapActivity.this, AddPlantActivity.class);
+                i.putExtra("LatLng",camLocation);
 
-
-                    Snackbar.make(view, "Add Plant Details", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
-                    image_marker_pin.setVisibility(View.GONE);
-                    CameraPosition cameraPosition = mMap.getCameraPosition();
-                    LatLng camLocation = cameraPosition.target;
-                    Intent i = new Intent(PlantMapActivity.this, AddPlantActivity.class);
-                    i.putExtra("LatLng", camLocation);
-
-                    startActivity(i);
-                    animateFAB();
-                }
+                startActivity(i);
+                animateFAB();
             }
         });
 /*
@@ -508,12 +499,6 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
         mMap = googleMap;
 
         mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-
-        int padding_in_dp = 105;  // 92 dps
-        final float scale = getResources().getDisplayMetrics().density;
-        int padding_in_px = (int) (padding_in_dp * scale + 0.5f);
-
-        mMap.setPadding(0,0,0,padding_in_px);
 
         //Initialize Google Play Services
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -742,9 +727,7 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
 
     private void addDrawerItems() {
 
-
-        String[] menuArray = { "List View", "SignIn", "Sign Out", "Manage Account" };
-
+        String[] menuArray = { "Map View", "List View", "SignIn", "Sign Out", "Manage Account" };
         mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, menuArray);
         mDrawerList.setAdapter(mAdapter);
 
@@ -752,25 +735,25 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
-                    //case 0:
-                        //Toast.makeText(PlantMapActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
-                    //   break;
                     case 0:
+                        Toast.makeText(PlantMapActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
+                        break;
+                    case 1:
                         CameraPosition cameraPosition = mMap.getCameraPosition();
                         ArrayList<Plant> sortedList = new ProximitySorter(plantList, cameraPosition.target).sortByDistance();
                         Intent i = new Intent(PlantMapActivity.this, PlantListActivity.class);
                         i.putParcelableArrayListExtra("PlantList", (ArrayList<? extends Parcelable>) sortedList);
                         startActivityForResult(i, 1);
                         break;
-                    case 1: //Third item
+                    case 2: //Third item
                         startActivity(new Intent(PlantMapActivity.this, LoginActivity.class));
                         //finish();
                         break;
 
-                    case 2:
+                    case 3:
                         signOut();
                         break;
-                    case 3:
+                    case 4:
                         startActivity(new Intent(PlantMapActivity.this, ManageAccountActivity.class));
                         break;
                 }
@@ -787,14 +770,14 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
                 double longitude = data.getDoubleExtra("longitude", -83.00);
                 mDrawerLayout.closeDrawer(Gravity.LEFT);
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(latitude, longitude)));
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(20));
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(17));
 
 
             } else if (requestCode == 2) { //plant desc return
                 double latitude = data.getDoubleExtra("latitude", 33.00);
                 double longitude = data.getDoubleExtra("longitude", -83.00);
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(latitude, longitude)));
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(20));
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(17));
             }
         }
     }
