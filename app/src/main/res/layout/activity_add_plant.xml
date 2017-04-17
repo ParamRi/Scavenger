@@ -28,6 +28,7 @@
         android:backgroundTint="#00AF97"
         android:inputType="textPersonName"
         android:hint="Plant Name"
+        android:layout_marginBottom="20dp"
         android:imeOptions="actionDone"
         android:textSize="20dip"/>
 
@@ -39,6 +40,7 @@
         android:backgroundTint="#00AF97"
         android:inputType="textPersonName"
         android:hint="Scientific Name"
+        android:layout_marginBottom="20dp"
         android:imeOptions="actionDone"
         android:textSize="20dip"/>
 
@@ -47,7 +49,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:backgroundTint="#00AF97"
-        android:layout_weight="0.01"
+        android:layout_weight="0.03"
+        android:layout_marginBottom="20dp"
+        android:theme="@style/AccentCheck"
         android:text="Edibile"
         android:textSize="20dip"/>
 
@@ -56,10 +60,11 @@
         android:id="@+id/descriptionTextEditor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="0.01"
+        android:layout_weight="0.03"
         android:ems="10"
         android:inputType="textMultiLine"
         android:backgroundTint="#00AF97"
+        android:layout_marginBottom="40dp"
         android:hint="Add Description"
         android:imeOptions="actionDone"
         android:textSize="20dip"/>
