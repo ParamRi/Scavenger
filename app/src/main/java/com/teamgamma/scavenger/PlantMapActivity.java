@@ -500,6 +500,12 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
 
         mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 
+        int padding_in_dp = 45;  // 92 dps
+        final float scale = getResources().getDisplayMetrics().density;
+        int padding_in_px = (int) (padding_in_dp * scale + 0.5f);
+
+        mMap.setPadding(0,0,0,padding_in_px);
+
         //Initialize Google Play Services
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(this,
@@ -601,7 +607,6 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
             }
         });
     }
-
     /**
      * Connects to Firebase and retrieves a list of plant locations around the user's location
      * within a given radius and places these locations on the map.
