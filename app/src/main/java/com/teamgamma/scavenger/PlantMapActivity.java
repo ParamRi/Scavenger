@@ -173,14 +173,14 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        tabLayout.addTab(tabLayout.newTab().setText("Map View"));
-        tabLayout.addTab(tabLayout.newTab().setText("List View"));
-        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+        //TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+       // tabLayout.addTab(tabLayout.newTab().setText("Map View"));
+        //tabLayout.addTab(tabLayout.newTab().setText("List View"));
+        //tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
 
 
-        final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+       /* final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         final PagerAdapter adapter = new PagerAdapter
                 (getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(adapter);
@@ -200,7 +200,7 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
             public void onTabReselected(TabLayout.Tab tab) {
 
             }
-        });
+        }); */
 
 
 

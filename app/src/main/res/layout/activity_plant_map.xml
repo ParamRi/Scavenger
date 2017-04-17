@@ -30,30 +30,6 @@
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
 
-
-        <android.support.design.widget.TabLayout
-            android:id="@+id/tab_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/toolbar"
-            android:background="?attr/colorPrimary"
-            android:elevation="6dp"
-            android:minHeight="?attr/actionBarSize"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
-
-
-        <android.support.v4.view.ViewPager
-            android:id="@+id/pager"
-            android:layout_width="match_parent"
-            android:layout_height="fill_parent"
-            />
-
-
-
-
-
-
-
         <com.teamgamma.scavenger.DelayAutoCompleteTextView
             android:id="@+id/geo_autocomplete"
             android:layout_width="match_parent"
@@ -67,10 +43,11 @@
             android:hint="@string/map_geo_search_input_hint"
             android:layout_gravity="bottom|end"
             android:dropDownWidth="fill_parent"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@id/tab_layout"
+            android:layout_below="@id/toolbar"
+            android:layout_alignParentLeft="true" />
 
-            />
+
+
 
         <ImageView
             android:id="@+id/geo_autocomplete_clear"
@@ -82,9 +59,10 @@
             android:visibility="gone"
             android:layout_toRightOf="@id/geo_autocomplete"
             android:layout_alignParentRight="true"
-            android:layout_below="@id/tab_layout"
+            android:layout_below="@id/toolbar"/>
 
-            />
+
+
 
 
 
