@@ -39,7 +39,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.squareup.picasso.Picasso;
 import com.teamgamma.scavenger.API.API;
 import com.teamgamma.scavenger.R;
 
@@ -172,9 +171,7 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
         plantNameText = (AutoCompleteTextView) findViewById(R.id.plantNameText);
         plantSciNameText = (EditText) findViewById(R.id.sciNameText);
         plantDescText = (EditText) findViewById(R.id.descriptionTextEditor);
-
         uploadImageView = (ImageView) findViewById(R.id.plantImageView);
-
 
 
         //Create a new ArrayAdapter with your context and the simple layout for the dropdown menu provided by Android
@@ -186,7 +183,6 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
         final ArrayAdapter<String> autoComplete = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1, commonName);
         plantNameText.setAdapter(autoComplete);
         plantNameText.setThreshold(1);
-
 
 
         plantNameText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -336,7 +332,6 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
                     mProgress.dismiss();
                     @SuppressWarnings("VisibleForTests") Uri downloadUrl_temp = taskSnapshot.getDownloadUrl();
                     downloadUrlString = downloadUrl_temp.toString();
-                    Picasso.with(AddPlantActivity.this).load(downloadUrl_temp).fit().centerCrop().rotate(90).into(uploadImageView);
 
                     //Picasso.with(AddPlantActivity.this).load(downloadUrl_temp).fit().centerCrop().rotate(90).into(uploadImageView);
                     if(downloadUrlString.length() > 0) {

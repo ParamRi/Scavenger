@@ -24,7 +24,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -33,6 +32,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.support.v4.view.ViewPager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
@@ -51,9 +51,6 @@ import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
 import com.firebase.geofire.GeoQueryEventListener;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -75,9 +72,11 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.teamgamma.scavenger.API.API;
+import com.teamgamma.scavenger.PagerAdapter;
 import com.teamgamma.scavenger.API.ProximitySorter;
 import com.teamgamma.scavenger.plant.AddPlantActivity;
 import com.teamgamma.scavenger.plant.Plant;
@@ -87,6 +86,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
+import android.support.v7.widget.Toolbar;
 
 
 public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCallback,
@@ -197,8 +204,7 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
 
 
 
-        mDrawerList = (ListView)findViewById(R.id.navList);
-        mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
+        mDrawerList = (ListView)findViewById(R.id.navList);mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         mActivityTitle = getTitle().toString();
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab2 = (FloatingActionButton) findViewById(R.id.fab2);
@@ -383,16 +389,24 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
         fab2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Add Plant Details", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                image_marker_pin.setVisibility(View.GONE);
-                CameraPosition cameraPosition = mMap.getCameraPosition();
-                LatLng camLocation = cameraPosition.target;
-                Intent i = new  Intent(PlantMapActivity.this, AddPlantActivity.class);
-                i.putExtra("LatLng",camLocation);
+                float zoom = mMap.getCameraPosition().zoom;
+                if(zoom < 19){
+                    Toast.makeText(PlantMapActivity.this, "Please Zoom further before adding plant!", Toast.LENGTH_SHORT).show();
+                }
+                else {
 
-                startActivity(i);
-                animateFAB();
+
+                    Snackbar.make(view, "Add Plant Details", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                    image_marker_pin.setVisibility(View.GONE);
+                    CameraPosition cameraPosition = mMap.getCameraPosition();
+                    LatLng camLocation = cameraPosition.target;
+                    Intent i = new Intent(PlantMapActivity.this, AddPlantActivity.class);
+                    i.putExtra("LatLng", camLocation);
+
+                    startActivity(i);
+                    animateFAB();
+                }
             }
         });
 /*
@@ -729,7 +743,7 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
 
     private void addDrawerItems() {
 
-        String[] menuArray = { "Map View", "List View", "SignIn", "Sign Out", "Manage Account" };
+        String[] menuArray = { "List View", "SignIn", "Sign Out", "Manage Account" };
         mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, menuArray);
         mDrawerList.setAdapter(mAdapter);
 
@@ -741,23 +755,21 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
                         //Toast.makeText(PlantMapActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
                     //   break;
                     case 0:
-                        Toast.makeText(PlantMapActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
-                        break;
-                    case 1:
                         CameraPosition cameraPosition = mMap.getCameraPosition();
                         ArrayList<Plant> sortedList = new ProximitySorter(plantList, cameraPosition.target).sortByDistance();
                         Intent i = new Intent(PlantMapActivity.this, PlantListActivity.class);
                         i.putParcelableArrayListExtra("PlantList", (ArrayList<? extends Parcelable>) sortedList);
                         startActivityForResult(i, 1);
                         break;
-                    case 2: //Fourth item
-                        startActivity(new Intent(PlantMapActivity.this, SignupActivity.class));
+                    case 1: //Third item
+                        startActivity(new Intent(PlantMapActivity.this, LoginActivity.class));
+                        //finish();
                         break;
-                    //Toast.makeText(PlantMapActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
-                    case 3:
+
+                    case 2:
                         signOut();
                         break;
-                    case 4:
+                    case 3:
                         startActivity(new Intent(PlantMapActivity.this, ManageAccountActivity.class));
                         break;
                 }
@@ -774,14 +786,14 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
                 double longitude = data.getDoubleExtra("longitude", -83.00);
                 mDrawerLayout.closeDrawer(Gravity.LEFT);
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(latitude, longitude)));
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(17));
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(20));
 
 
             } else if (requestCode == 2) { //plant desc return
                 double latitude = data.getDoubleExtra("latitude", 33.00);
                 double longitude = data.getDoubleExtra("longitude", -83.00);
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(latitude, longitude)));
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(17));
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(20));
             }
         }
     }
