@@ -66,25 +66,38 @@
         android:backgroundTint="#00AF97"
         android:layout_marginBottom="40dp"
         android:hint="Add Description"
-        android:imeOptions="actionDone"
-        android:textSize="20dip"/>
-
+        android:imeOptions="actionDone"/>
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="1"
+        android:orientation="vertical">
 
         <Button
             android:id="@+id/addImageButton"
             android:layout_marginBottom="15dp"
             android:layout_width="200dip"
-            android:layout_gravity="center"
-            android:background="@drawable/button_rounded_accent_color"
             android:layout_height="40dp"
-            android:text="Add Photo"
-            android:textColor="@color/white"
-             />
+            android:background="@drawable/button_rounded_accent_color"
+            android:layout_gravity="center"
+            android:text="Capture Plant Pic" />
 
+        <Button
+            android:id="@+id/uploadImageButton"
+            android:layout_marginBottom="15dp"
+            android:layout_width="200dip"
+            android:layout_height="40dp"
+            android:background="@drawable/button_rounded_accent_color"
+            android:layout_gravity="center"
+            android:text="Select Pic from Gallery" />
+
+
+    </LinearLayout>
 
     <Button
         android:id="@+id/addPlantButton"
-        android:layout_marginBottom="30dp"
+        android:layout_marginBottom="15dp"
         android:layout_width="200dip"
         android:layout_height="40dp"
         android:onClick="addPlant"
