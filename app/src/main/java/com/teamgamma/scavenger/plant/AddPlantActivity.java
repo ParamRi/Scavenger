@@ -30,6 +30,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -72,16 +73,17 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
     private CheckBox edibilityCheckBox;
     private Button addPlantButton;
     private Button addImageButton;
+    private Button selectImageFromGalleryButton;
     private Plant createPlant;
     private static final int CAMERA_REQUEST_CODE = 1;
+    private static final int GALLERY_INTENT = 2;
     private ProgressDialog mProgress;
     private ImageView uploadImageView;
     private String downloadUrlString;
     private Uri photoURI;
     private ProgressBar progressBar;
-    private static final String[] COUNTRIES = new String[] {
-            "Belgium", "France", "Italy", "Germany", "Spain"
-    };
+    private boolean jsonLoadedFlag = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,6 +114,8 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
                 commonScientificMap.put(plantCommonName, plantScientificName);
                 scientificPalatableMap.put(plantScientificName, palatableHuman);
             }
+            jsonLoadedFlag = true;
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -224,6 +228,7 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
         edibilityCheckBox = (CheckBox) findViewById(R.id.checkBox);
         addPlantButton = (Button) findViewById(R.id.addPlantButton);
         addImageButton = (Button) findViewById(R.id.addImageButton);
+        selectImageFromGalleryButton = (Button) findViewById(R.id.uploadImageButton);
         addImageButton.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View view) {
@@ -234,6 +239,16 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
                     //Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     //startActivityForResult(intent, CAMERA_REQUEST_CODE);
                    //}
+            }
+
+        });
+
+        selectImageFromGalleryButton.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_PICK);
+                intent.setType("image/*");
+                startActivityForResult(intent, GALLERY_INTENT);
             }
 
         });
@@ -260,6 +275,11 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
 
             }
         });
+
+        if(jsonLoadedFlag) {
+            plantSciNameText.setEnabled(false);
+            edibilityCheckBox.setEnabled(false);
+        }
 
     }
 
@@ -292,13 +312,20 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String userId = "";
+        if (user != null) {
+            userId = user.getUid();
+        }
         if (requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK) {
             mProgress.setMessage("Uploading...");
             mProgress.show();
             //Uri uri = data.getData();
             galleryAddPic();
-            StorageReference filepath = API.getStorageReference().child("Photos").child(photoURI.getLastPathSegment());
+            if (user != null) {
+
+            }
+            StorageReference filepath = API.getStorageReference().child("Photos").child(userId + photoURI.getLastPathSegment());
             filepath.putFile(photoURI).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -306,15 +333,69 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
                     mProgress.dismiss();
                     @SuppressWarnings("VisibleForTests") Uri downloadUrl_temp = taskSnapshot.getDownloadUrl();
                     downloadUrlString = downloadUrl_temp.toString();
-                    Picasso.with(AddPlantActivity.this).load(downloadUrl_temp).fit().centerCrop().rotate(90).into(uploadImageView);
 
+                    //Picasso.with(AddPlantActivity.this).load(downloadUrl_temp).fit().centerCrop().rotate(90).into(uploadImageView);
+                    if(downloadUrlString.length() > 0) {
+                        Glide.with(AddPlantActivity.this)
+                                .load(downloadUrlString)
+                                .into(uploadImageView);
+                    }
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
                     Toast.makeText(AddPlantActivity.this, "Upload Failed!", Toast.LENGTH_SHORT).show();
+                    downloadUrlString = "";
                 }
             });
+
+        }
+
+        if (requestCode == GALLERY_INTENT && resultCode == RESULT_OK) {
+            mProgress.setMessage("Uploading...");
+            mProgress.show();
+            Uri uri = null;
+            if (data != null) {
+                uri = data.getData();
+            }
+
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                photoURI = FileProvider.getUriForFile(this,
+                        "com.example.android.fileprovider",
+                        photoFile);
+                StorageReference filepath = API.getStorageReference().child("Photos").child(userId + photoURI.getLastPathSegment());
+                filepath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        Toast.makeText(AddPlantActivity.this, "Upload Successful!", Toast.LENGTH_SHORT).show();
+                        mProgress.dismiss();
+                        @SuppressWarnings("VisibleForTests") Uri downloadUrl_temp = taskSnapshot.getDownloadUrl();
+                        downloadUrlString = downloadUrl_temp.toString();
+                        //Picasso.with(AddPlantActivity.this).load(downloadUrl_temp).fit().centerCrop().into(uploadImageView);
+                        if(downloadUrlString.length() > 0) {
+                            Glide.with(AddPlantActivity.this)
+                                    .load(downloadUrlString)
+                                    .into(uploadImageView);
+                        }
+
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(AddPlantActivity.this, "Adding from Gallery Failed!", Toast.LENGTH_SHORT).show();
+                        downloadUrlString = "";
+                    }
+                });
+
+            }
         }
     }
 
@@ -327,7 +408,11 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
             if (plantNameText.getText().length() == 0) {
                 Toast.makeText(AddPlantActivity.this, "Plant Name field cannot be empty", Toast.LENGTH_SHORT).show();
 
-            } else if (plantDescText.getText().length() == 0) {
+            }
+            else if(plantSciNameText.getText().length() == 0){
+                Toast.makeText(AddPlantActivity.this, "Scientific Name empty, Please select a common name from the suggestions only", Toast.LENGTH_SHORT).show();
+            }
+            else if (plantDescText.getText().length() == 0) {
                 Toast.makeText(AddPlantActivity.this, "Plant Description field cannot be empty", Toast.LENGTH_SHORT).show();
 
             } else {
