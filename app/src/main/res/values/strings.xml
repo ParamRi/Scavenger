@@ -99,5 +99,6 @@
     <string name="lbl_forgot_password">Forgot password?</string>
     <string name="forgot_password_msg">We just need your registered Email Id to sent you password reset instructions.</string>
     <string name="title_activity_add_plant">AddPlantActivity</string>
+    <string name="banner_ad_unit_id">ca-app-pub-1206729102967700/5768798878</string>
 
 </resources>

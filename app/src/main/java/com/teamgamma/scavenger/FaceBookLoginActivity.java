@@ -48,11 +48,11 @@ public class FaceBookLoginActivity extends AppCompatActivity{
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setTitle("Facebook Login");
+        getSupportActionBar().setTitle("Sign In");
 
         callbackManager = CallbackManager.Factory.create();
 
-        loginButton = (LoginButton) findViewById(R.id.login_button);
+        loginButton = (LoginButton) findViewById(R.id.fb_login_button);
         info = (TextView)findViewById(R.id.fb_login_info);
 
         loginButton.setReadPermissions(Arrays.asList("email"));
@@ -60,6 +60,7 @@ public class FaceBookLoginActivity extends AppCompatActivity{
             @Override
             public void onSuccess(LoginResult loginResult) {
                 handleFacebookAccessToken(loginResult.getAccessToken());
+                //Toast.makeText(getApplicationContext(),"SUCCESS",Toast.LENGTH_SHORT).show();
                 goMainScreen();
             }
 
@@ -103,6 +104,7 @@ public class FaceBookLoginActivity extends AppCompatActivity{
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode,resultCode,data);
     }
+
 
     @Override
     protected void onStart() {

@@ -7,10 +7,11 @@
     android:paddingLeft="8dp"
     android:paddingRight="8dp">
 
+
     <ListView android:id="@+id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#92c492"
+        android:background="#FFFFFF"
         android:layout_weight="1"
         android:drawSelectorOnTop="false"/>
 

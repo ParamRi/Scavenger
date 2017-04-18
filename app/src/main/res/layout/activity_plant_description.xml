@@ -13,35 +13,51 @@
     >
 
     <ImageView
+
+        android:layout_marginTop="5dp"
         android:id="@+id/descImageView"
         android:layout_width="match_parent"
         android:layout_height="122dp"
         android:layout_weight="0.48"
-        app:srcCompat="@drawable/plant_add" />
+        app:srcCompat="@drawable/plant_add"
+        android:layout_marginBottom="5dip"/>
 
 
     <TextView
+        android:layout_marginTop="5dp"
         android:text="TextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="3dip"
         android:id="@+id/descPlantName"
-        tools:text="Plant Name"
-        android:layout_weight="0.13" />
+        android:layout_weight="0.10"
+        android:textSize="22dp"
+        android:textColor="#A9A9A9"
+        tools:text="Plant Name" />
+
 
     <TextView
         android:text="TextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/descSciName"
+        android:layout_weight="0.12"
+        android:textSize="16dp"
+        android:layout_marginLeft="3dip"
+        android:textColor="@color/colorFAB"
+        android:textStyle="italic"
         tools:text="Scientific Name"
-        android:layout_weight="0.13" />
+        android:layout_marginBottom="15dip"/>
+
 
     <RadioButton
         android:id="@+id/descEdibilityRadioButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clickable="false"
+        android:layout_marginLeft="3dip"
         android:layout_weight="0.00"
+        android:theme="@style/AccentCheck"
         android:text="Edibile" />
 
     <TextView
@@ -49,25 +65,37 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/descDescription"
+        android:layout_weight="0.40"
+        android:layout_marginLeft="3dip"
+        android:layout_marginRight="3dip"
+        android:textColor="#A9A9A9"
+        android:textSize="15dp"
         tools:text="Description"
-        android:layout_weight="0.42" />
+        android:layout_marginBottom="10dip"/>
 
     <Button
+
+        android:layout_marginBottom="5dp"
+        android:layout_width="200dip"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@drawable/button_rounded_accent_color"
+        android:textColor="@android:color/white"
         android:text="Let's Go"
-        android:layout_width="match_parent"
-        android:layout_height="47dp"
-        android:id="@+id/findPlantButton" />
-    <!--
+        android:id="@+id/findPlantButton"
+         />
+
+
     <Button
-        android:text="View Log"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/button2" />
-    -->
-    <Button
+        android:layout_marginBottom="5dp"
         android:text="Add Photo"
-        android:layout_width="match_parent"
+        android:layout_width="200dip"
         android:layout_height="wrap_content"
-        android:id="@+id/descAddPhoto"/>
+        android:layout_gravity="center"
+        android:background="@drawable/button_rounded_accent_color"
+        android:textColor="@android:color/white"
+        android:id="@+id/descAddPhoto" />
+
 </LinearLayout>
 </ScrollView>
+

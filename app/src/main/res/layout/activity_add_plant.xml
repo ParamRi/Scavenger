@@ -25,63 +25,73 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
+        android:backgroundTint="#00AF97"
         android:inputType="textPersonName"
         android:hint="Plant Name"
-        android:imeOptions="actionDone"/>
+        android:layout_marginBottom="20dp"
+        android:imeOptions="actionDone"
+        android:textSize="20dip"/>
 
     <EditText
         android:id="@+id/sciNameText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
+        android:backgroundTint="#00AF97"
         android:inputType="textPersonName"
         android:hint="Scientific Name"
-        android:imeOptions="actionDone"/>
+        android:layout_marginBottom="20dp"
+        android:imeOptions="actionDone"
+        android:textSize="20dip"/>
 
     <CheckBox
         android:id="@+id/checkBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="0.00"
-        android:text="Edibile" />
+        android:backgroundTint="#00AF97"
+        android:layout_weight="0.03"
+        android:layout_marginBottom="20dp"
+        android:theme="@style/AccentCheck"
+        android:text="Edibile"
+        android:textSize="20dip"/>
+
 
     <EditText
         android:id="@+id/descriptionTextEditor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="0.01"
+        android:layout_weight="0.03"
         android:ems="10"
         android:inputType="textMultiLine"
+        android:backgroundTint="#00AF97"
+        android:layout_marginBottom="40dp"
         android:hint="Add Description"
-        android:imeOptions="actionDone"/>
-    <LinearLayout
-        android:id="@+id/linearLayout1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:weightSum="1"
-        android:orientation="vertical">
+        android:imeOptions="actionDone"
+        android:textSize="20dip"/>
+
 
         <Button
             android:id="@+id/addImageButton"
-            android:layout_width="match_parent"
-            android:layout_height="41dp"
-            android:text="Capture Plant Pic" />
+            android:layout_marginBottom="15dp"
+            android:layout_width="200dip"
+            android:layout_gravity="center"
+            android:background="@drawable/button_rounded_accent_color"
+            android:layout_height="40dp"
+            android:text="Add Photo"
+            android:textColor="@color/white"
+             />
 
-        <Button
-            android:id="@+id/uploadImageButton"
-            android:layout_width="match_parent"
-            android:layout_height="41dp"
-            android:text="Select Pic from Gallery" />
-
-
-    </LinearLayout>
 
     <Button
         android:id="@+id/addPlantButton"
-        android:layout_width="match_parent"
+        android:layout_marginBottom="30dp"
+        android:layout_width="200dip"
         android:layout_height="40dp"
         android:onClick="addPlant"
-        android:text="Submit" />
+        android:background="@drawable/button_rounded_accent_color"
+        android:layout_gravity="center"
+        android:text="Submit"
+        android:textColor="@color/white"/>
 
 
 </LinearLayout>
