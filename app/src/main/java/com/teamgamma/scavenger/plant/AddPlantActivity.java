@@ -15,7 +15,6 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -37,11 +36,6 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
@@ -345,16 +339,12 @@ public class AddPlantActivity extends AppCompatActivity implements View.OnClickL
                 API.getDatabaseReference().child("plants").child(plantId).setValue(createPlant);
                 API.getGeoFire().setLocation(plantId, new GeoLocation(latitude, longitude));
                 System.out.println("added plant");
-                //DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-                //mDatabase.child("plants_with_image").push().setValue(createPlant);
-                //System.out.println("added plant");
                 Toast.makeText(AddPlantActivity.this, "Plant has been added into the databse", Toast.LENGTH_SHORT).show();
                 finish();
             }
         }
         else{
             Toast.makeText(AddPlantActivity.this, "You need to be Logged in to add a plant", Toast.LENGTH_SHORT).show();
-
         }
     }
     @Override

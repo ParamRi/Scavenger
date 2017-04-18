@@ -71,7 +71,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.teamgamma.scavenger.API.API;
@@ -347,27 +346,6 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
                 animateFAB();
             }
         });
-/*
-        authListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-                if(user != null) {
-                    for (UserInfo user_info : FirebaseAuth.getInstance().getCurrentUser().getProviderData()) {
-                        if (user_info.getProviderId().toLowerCase().contains("facebook")) {
-                            user_signed_in_through_facebook = true;
-                            break;
-                        }
-                    }
-                }
-
-
-
-            }
-        };
-        */
     }
 
 
@@ -683,9 +661,6 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
-                    //case 0:
-                        //Toast.makeText(PlantMapActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
-                    //   break;
                     case 0:
                         CameraPosition cameraPosition = mMap.getCameraPosition();
                         ArrayList<Plant> sortedList = new ProximitySorter(plantList, cameraPosition.target).sortByDistance();
@@ -693,14 +668,13 @@ public class PlantMapActivity extends AppCompatActivity implements OnMapReadyCal
                         i.putParcelableArrayListExtra("PlantList", (ArrayList<? extends Parcelable>) sortedList);
                         startActivityForResult(i, 1);
                         break;
-                    case 1: //Third item
+                    case 1: //2nd Item
                         startActivity(new Intent(PlantMapActivity.this, LoginActivity.class));
                         //finish();
                         break;
-                    case 2: //Fourth item
+                    case 2: //3rd item
                         startActivity(new Intent(PlantMapActivity.this, SignupActivity.class));
                         break;
-                    //Toast.makeText(PlantMapActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
                     case 3:
                         signOut();
                         break;
